@@ -33,10 +33,11 @@ pip install -r requirements.txt
 
 ## Run
 
+From the backend folder, use the launcher script:
+
 ```bash
-cd /home/yithian/Workspace/portfolio-tracker/backend
-source .venv311/bin/activate
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+cd /home/yithian/Workspace/Janus-ledger/backend
+./run.sh
 ```
 
 - API docs (Swagger UI): http://localhost:8000/docs

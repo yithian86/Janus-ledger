@@ -20,6 +20,7 @@
 
 .pt-field__prefix {
   position: absolute;
+  top: calc(50% - 8px);
   left: var(--space-sm);
   color: var(--color-ink-faint);
   font-family: var(--font-mono);
@@ -60,7 +61,7 @@
 }
 
 .pt-input--has-prefix {
-  padding-left: var(--space-xl);
+  padding-left: var(--space-2xl);
 }
 
 .pt-field__error {

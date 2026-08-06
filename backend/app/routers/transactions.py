@@ -27,7 +27,7 @@ def list_transactions(
 
 @router.post("", response_model=schemas.TransactionOut, status_code=201)
 def create_transaction(payload: schemas.TransactionCreate, db: Session = Depends(get_db)):
-    if not db.get(models.Asset, payload.asset_id):
+    if payload.asset_id is not None and not db.get(models.Asset, payload.asset_id):
         raise HTTPException(404, "Asset not found")
     txn = models.Transaction(**payload.model_dump())
     db.add(txn)

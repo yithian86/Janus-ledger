@@ -21,12 +21,13 @@ def _period_key(d, granularity: Granularity) -> str:
 
 
 def _transactions_dataframe(db: Session) -> pd.DataFrame:
-    stmt = select(Transaction).join(Asset)
+    stmt = select(Transaction).outerjoin(Asset)
     txns = db.execute(stmt).scalars().all()
 
     rows = []
     for t in txns:
         base_amount = None
+        ticker = t.asset.ticker if t.asset else None
         # Determine the "flow" amount in native currency depending on type
         if t.transaction_type == TransactionType.BUY:
             native = -(t.quantity * t.price + (t.fees or 0.0)) if t.quantity and t.price else 0.0
@@ -48,7 +49,7 @@ def _transactions_dataframe(db: Session) -> pd.DataFrame:
 
         rows.append({
             "asset_id": t.asset_id,
-            "ticker": t.asset.ticker,
+            "ticker": ticker,
             "date": t.date,
             "type": t.transaction_type.value,
             "amount_base": base_amount,

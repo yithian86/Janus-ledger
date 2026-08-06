@@ -39,4 +39,11 @@ else
   "$PYTHON_BIN" -m pip install -r requirements.txt
 fi
 
-exec "$PYTHON_BIN" -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+VENV_BIN_DIR="$(dirname "$PYTHON_BIN")"
+UVICORN_BIN="$VENV_BIN_DIR/uvicorn"
+
+if [[ -x "$UVICORN_BIN" ]]; then
+  exec "$UVICORN_BIN" app.main:app --reload --host 0.0.0.0 --port 8000
+else
+  exec "$PYTHON_BIN" -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+fi

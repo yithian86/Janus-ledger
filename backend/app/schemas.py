@@ -4,7 +4,7 @@ Pydantic schemas — API request/response shapes, decoupled from the ORM models.
 from datetime import date as date_type
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from app.models import AssetType, TransactionType
 
@@ -45,7 +45,7 @@ class AssetOut(AssetBase):
 # ---------- Transaction ----------
 
 class TransactionBase(BaseModel):
-    asset_id: int
+    asset_id: Optional[int] = None
     transaction_type: TransactionType
     date: date_type
     quantity: Optional[float] = None
@@ -58,7 +58,13 @@ class TransactionBase(BaseModel):
 
 
 class TransactionCreate(TransactionBase):
-    pass
+    @model_validator(mode="after")
+    def validate_asset_id(self):
+        if self.transaction_type not in (TransactionType.FEE, TransactionType.STAMP_DUTY) and self.asset_id is None:
+            raise ValueError(
+                "asset_id is required for all transaction types except fee and stamp_duty"
+            )
+        return self
 
 
 class TransactionUpdate(BaseModel):

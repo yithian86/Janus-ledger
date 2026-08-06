@@ -23,6 +23,7 @@ backend/.coverage
 backend/htmlcov/
 backend/.env
 backend/.venv/
+backend/.venv311/
 backend/venv/
 
 # Node / Angular

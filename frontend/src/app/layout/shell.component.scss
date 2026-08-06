@@ -1,6 +1,7 @@
 .pt-shell {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .pt-sidebar {
@@ -61,4 +62,5 @@
   flex: 1;
   padding: var(--space-xl) var(--space-2xl);
   max-width: var(--content-max-width);
+  overflow-y: auto;
 }

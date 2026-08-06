@@ -48,6 +48,10 @@
       >
         {{ row.unrealized_gain_base != null ? (row.unrealized_gain_base | number: '1.2-2') + ' €' : '—' }}
       </span>
+    } @else if (column.key === 'asset_type') {
+      <span class="asset-type">
+        {{ row.asset_type.toUpperCase() }}
+      </span>
     } @else {
       <span [class.num]="column.numeric">
         {{ column.accessor ? column.accessor(row) : (column.numeric ? (row[column.key] | number: '1.2-2') : row[column.key]) }}

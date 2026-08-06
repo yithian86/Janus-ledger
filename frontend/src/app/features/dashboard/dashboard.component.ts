@@ -56,14 +56,29 @@ export class DashboardComponent implements OnInit {
     const palette = ['#2B6E64', '#7C8592', '#B9C1BB', '#2E7D4F', '#DADFD9'];
 
     this.allocationChart = {
-      tooltip: { trigger: 'item' },
+      tooltip: {
+        trigger: 'item',
+        formatter: (params: any) => {
+          const data = Array.isArray(params) ? params[0] : params;
+          const percent = Number(data.percent ?? 0).toFixed(1);
+          return `<strong>${data.name.toUpperCase()}</strong><br/>${percent}% of portfolio`;
+        },
+      },
       textStyle: { fontFamily: 'Inter, sans-serif' },
       series: [
         {
           type: 'pie',
           radius: ['45%', '75%'],
           itemStyle: { borderColor: '#F5F6F4', borderWidth: 2 },
-          label: { fontFamily: 'IBM Plex Mono, monospace', fontSize: 12 },
+          label: { 
+            fontFamily: 'IBM Plex Mono, monospace',
+            fontSize: 12,
+            formatter: (params: any) => {
+              const data = Array.isArray(params) ? params[0] : params;
+              const percent = Number(data.percent ?? 0).toFixed(1);
+              return `${data.name.toUpperCase()}(${percent}%)`;
+            }
+          },
           data: Array.from(byType.entries()).map(([name, value], i) => ({
             name,
             value: Math.round(value * 100) / 100,
@@ -74,7 +89,14 @@ export class DashboardComponent implements OnInit {
     };
 
     this.holdingChart = {
-      tooltip: { trigger: 'item' },
+      tooltip: {
+        trigger: 'item',
+        formatter: (params: any) => {
+          const data = Array.isArray(params) ? params[0] : params;
+          const percent = Number(data.percent ?? 0).toFixed(1);
+          return `<strong>${data.name}</strong><br/>${percent}% of portfolio`;
+        },
+      },
       textStyle: { fontFamily: 'Inter, sans-serif' },
       series: [
         {
@@ -89,11 +111,12 @@ export class DashboardComponent implements OnInit {
           })),
           tooltip: {
             formatter: (params: any) => {
-              const h = holdings.find((h) => h.ticker === params.name);
+              const data = Array.isArray(params) ? params[0] : params;
+              const h = holdings.find((h) => h.ticker === data.name);
               if (!h) return '';
               const value = h.market_value_base ?? h.cost_basis_base;
-              const gain = h.unrealized_gain_base ?? 0;
-              return `<strong>${h.ticker} — ${h.name}</strong><br/>Value: €${value.toFixed(2)}`;
+              const percent = Number(data.percent ?? 0).toFixed(1);
+              return `<strong>${h.ticker} — ${h.name}</strong><br/>${percent}% of portfolio<br/>Value: €${value.toFixed(2)}`;
             },
           },
         },

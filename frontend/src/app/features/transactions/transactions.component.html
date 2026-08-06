@@ -1,7 +1,7 @@
 <div class="page-header">
   <div>
     <h1>Transactions</h1>
-    <p class="text-muted">Every buy, sell, dividend, coupon, deposit, withdrawal, and fee.</p>
+    <p class="text-muted">Every buy, sell, dividend, coupon, deposit, withdrawal, fee, and stamp duty.</p>
   </div>
   <pt-button (click)="openCreate()" [disabled]="assets.length === 0">+ Add transaction</pt-button>
 </div>
@@ -32,7 +32,9 @@
 
 <pt-modal [open]="modalOpen" [title]="editingTxn ? 'Edit transaction' : 'Add transaction'" [backdropClosable]="false" (close)="closeModal()">
   <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
-    <pt-select label="Asset" formControlName="asset_id" [options]="assetOptions" placeholder="Select an asset" />
+    @if (showAsset) {
+      <pt-select label="Asset" formControlName="asset_id" [options]="assetOptions" placeholder="Select an asset" />
+    }
     <pt-select label="Type" formControlName="transaction_type" [options]="typeOptions" />
     <pt-input label="Date" type="date" formControlName="date" />
 

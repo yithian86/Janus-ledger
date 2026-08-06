@@ -5,11 +5,12 @@ export type TransactionType =
   | 'coupon'
   | 'deposit'
   | 'withdrawal'
-  | 'fee';
+  | 'fee'
+  | 'stamp_duty';
 
 export interface Transaction {
   id: number;
-  asset_id: number;
+  asset_id?: number;
   transaction_type: TransactionType;
   date: string; // ISO date, e.g. "2026-01-15"
   quantity?: number | null;
@@ -32,4 +33,5 @@ export const TRANSACTION_TYPE_LABELS: Record<TransactionType, string> = {
   deposit: 'Deposit',
   withdrawal: 'Withdrawal',
   fee: 'Fee',
+  stamp_duty: 'Stamp duty',
 };

@@ -38,7 +38,7 @@ def _transactions_dataframe(db: Session) -> pd.DataFrame:
             native = (t.amount or 0.0)
         elif t.transaction_type == TransactionType.WITHDRAWAL:
             native = -(t.amount or 0.0)
-        elif t.transaction_type == TransactionType.FEE:
+        elif t.transaction_type in (TransactionType.FEE, TransactionType.STAMP_DUTY):
             native = -(t.amount or t.fees or 0.0)
         else:
             native = 0.0
@@ -72,7 +72,7 @@ def compute_cash_flow(db: Session, granularity: Granularity = "month") -> list[d
         income = group.loc[group["type"].isin(["dividend", "coupon"]), "amount_base"].sum()
         deposits = group.loc[group["type"] == "deposit", "amount_base"].sum()
         withdrawals = -group.loc[group["type"] == "withdrawal", "amount_base"].sum()
-        fees = group["fees_base"].sum() + (-group.loc[group["type"] == "fee", "amount_base"].sum())
+        fees = group["fees_base"].sum() + (-group.loc[group["type"].isin(["fee", "stamp_duty"]), "amount_base"].sum())
         net_flow = group["amount_base"].sum()
         return pd.Series({
             "invested_base": invested,

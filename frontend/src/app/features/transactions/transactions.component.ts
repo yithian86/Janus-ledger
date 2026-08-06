@@ -5,7 +5,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AssetService } from '../../core/services/asset.service';
 import { TransactionService } from '../../core/services/transaction.service';
 import { Asset } from '../../core/models/asset.model';
-import { Transaction, TransactionType, TRANSACTION_TYPE_LABELS } from '../../core/models/transaction.model';
+import {
+  Transaction,
+  TransactionCreate,
+  TransactionType,
+  TRANSACTION_TYPE_LABELS,
+} from '../../core/models/transaction.model';
 import { TableComponent, TableColumn } from '../../commons/components/table/table.component';
 import { ButtonComponent } from '../../commons/components/button/button.component';
 import { ModalComponent } from '../../commons/components/modal/modal.component';
@@ -25,6 +30,7 @@ const BADGE_TONE_BY_TYPE: Record<TransactionType, BadgeTone> = {
   deposit: 'accent',
   withdrawal: 'loss',
   fee: 'loss',
+  stamp_duty: 'loss',
 };
 
 interface TransactionRow extends Transaction {
@@ -87,11 +93,14 @@ export class TransactionsComponent implements OnInit {
     notes: [''],
   });
 
+  get showAsset() {
+    return !['fee', 'stamp_duty'].includes(this.form.controls.transaction_type.value);
+  }
   get showQuantityPrice() {
     return ['buy', 'sell'].includes(this.form.controls.transaction_type.value);
   }
   get showAmount() {
-    return !this.showQuantityPrice;
+    return !this.showQuantityPrice && !['fee', 'stamp_duty'].includes(this.form.controls.transaction_type.value);
   }
   get currencySuffix() {
     return this.form.controls.currency.value;
@@ -110,13 +119,19 @@ export class TransactionsComponent implements OnInit {
       this.transactions = txns;
       this.rebuildRows();
     });
+
+    this.form.controls.transaction_type.valueChanges.subscribe(() => this.updateAssetValidators());
+    this.updateAssetValidators();
   }
 
   private rebuildRows() {
     const assetById = new Map(this.assets.map((a) => [a.id, a]));
     this.rows = this.transactions.map((t) => ({
       ...t,
-      assetLabel: assetById.get(t.asset_id)?.name ?? `#${t.asset_id}`,
+      assetLabel:
+        t.asset_id != null
+          ? assetById.get(t.asset_id)?.name ?? `#${t.asset_id}`
+          : 'N/A',
     }));
     this.applySort();
   }
@@ -174,7 +189,7 @@ export class TransactionsComponent implements OnInit {
   openEdit(row: TransactionRow) {
     this.editingTxn = row;
     this.form.reset({
-      asset_id: String(row.asset_id),
+      asset_id: row.asset_id != null ? String(row.asset_id) : '',
       transaction_type: row.transaction_type,
       date: row.date,
       quantity: row.quantity ?? null,
@@ -192,10 +207,33 @@ export class TransactionsComponent implements OnInit {
     this.modalOpen = false;
   }
 
+  private updateAssetValidators() {
+    const assetControl = this.form.controls.asset_id;
+    if (this.showAsset) {
+      assetControl.setValidators([Validators.required]);
+    } else {
+      assetControl.clearValidators();
+      assetControl.setValue('');
+    }
+    assetControl.updateValueAndValidity({ onlySelf: true });
+  }
+
   save() {
     if (this.form.invalid) return;
     const raw = this.form.getRawValue();
-    const payload = { ...raw, asset_id: Number(raw.asset_id) };
+    const payload: TransactionCreate = {
+      transaction_type: raw.transaction_type,
+      date: raw.date,
+      quantity: raw.quantity,
+      price: raw.price,
+      amount: raw.amount,
+      fees: raw.fees,
+      currency: raw.currency,
+      reinvested: raw.reinvested,
+      notes: raw.notes,
+      ...(raw.asset_id !== '' ? { asset_id: Number(raw.asset_id) } : {}),
+    };
+
     const request$ = this.editingTxn
       ? this.transactionService.update(this.editingTxn.id, payload)
       : this.transactionService.create(payload);

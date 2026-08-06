@@ -39,6 +39,7 @@ class TransactionType(str, enum.Enum):
     DEPOSIT = "deposit"        # cash moved into the portfolio (funding)
     WITHDRAWAL = "withdrawal"  # cash moved out of the portfolio
     FEE = "fee"                # standalone fee not tied to a buy/sell
+    STAMP_DUTY = "stamp_duty"  # stamp duty / transfer tax cost
 
 
 class Asset(Base):

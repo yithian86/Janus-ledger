@@ -1,4 +1,4 @@
-# Portfolio Tracker — Frontend
+# Janus Ledger — Frontend
 
 Angular app, no Material/component library — fully custom components themed
 via CSS design tokens. Charts via Apache ECharts.

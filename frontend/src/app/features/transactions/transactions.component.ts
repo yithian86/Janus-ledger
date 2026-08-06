@@ -75,8 +75,8 @@ export class TransactionsComponent implements OnInit {
     { key: 'transaction_type', header: 'Type' },
     { key: 'quantity', header: 'Qty', numeric: true },
     { key: 'price', header: 'Price', numeric: true },
-    { key: 'amount', header: 'Amount', numeric: true },
     { key: 'fees', header: 'Fees', numeric: true },
+    { key: 'amount', header: 'Amount', numeric: true },
     { key: 'currency', header: 'Ccy' },
   ];
 

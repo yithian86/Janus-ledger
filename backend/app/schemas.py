@@ -83,6 +83,13 @@ class TransactionOut(TransactionBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
 
+    @model_validator(mode="after")
+    def derive_amount_for_traded_assets(self):
+        if self.amount is None and self.transaction_type in (TransactionType.BUY, TransactionType.SELL):
+            if self.quantity is not None and self.price is not None:
+                self.amount = self.quantity * self.price
+        return self
+
 
 # ---------- PriceSnapshot ----------
 

@@ -28,7 +28,7 @@ const BADGE_TONE_BY_TYPE: Record<TransactionType, BadgeTone> = {
 };
 
 interface TransactionRow extends Transaction {
-  tickerLabel: string;
+  assetLabel: string;
 }
 
 @Component({
@@ -57,13 +57,15 @@ export class TransactionsComponent implements OnInit {
   rows: TransactionRow[] = [];
   assetOptions: SelectOption[] = [];
   typeOptions = TRANSACTION_TYPE_OPTIONS;
+  sortKey: string | null = 'date';
+  sortDirection: 'asc' | 'desc' | null = 'desc';
 
   modalOpen = false;
   editingTxn: Transaction | null = null;
 
   columns: TableColumn<TransactionRow>[] = [
-    { key: 'date', header: 'Date' },
-    { key: 'tickerLabel', header: 'Asset' },
+    { key: 'date', header: 'Date', sortable: true },
+    { key: 'assetLabel', header: 'Asset' },
     { key: 'transaction_type', header: 'Type' },
     { key: 'quantity', header: 'Qty', numeric: true },
     { key: 'price', header: 'Price', numeric: true },
@@ -114,8 +116,35 @@ export class TransactionsComponent implements OnInit {
     const assetById = new Map(this.assets.map((a) => [a.id, a]));
     this.rows = this.transactions.map((t) => ({
       ...t,
-      tickerLabel: assetById.get(t.asset_id)?.ticker ?? `#${t.asset_id}`,
+      assetLabel: assetById.get(t.asset_id)?.name ?? `#${t.asset_id}`,
     }));
+    this.applySort();
+  }
+
+  private applySort() {
+    if (this.sortKey !== 'date') {
+      return;
+    }
+
+    const directionFactor = this.sortDirection === 'asc' ? 1 : -1;
+    this.rows = [...this.rows].sort((a, b) => {
+      const aDate = this.getDateValue(a.date);
+      const bDate = this.getDateValue(b.date);
+      if (aDate === bDate) return 0;
+      return (aDate > bDate ? 1 : -1) * directionFactor;
+    });
+  }
+
+  private getDateValue(value: string | null | undefined) {
+    if (!value) return Number.NEGATIVE_INFINITY;
+    const parsed = Date.parse(value);
+    return Number.isNaN(parsed) ? Number.NEGATIVE_INFINITY : parsed;
+  }
+
+  onSortChange({ key, direction }: { key: string; direction: 'asc' | 'desc' | null }) {
+    this.sortKey = key;
+    this.sortDirection = direction;
+    this.applySort();
   }
 
   typeLabel(type: TransactionType) {

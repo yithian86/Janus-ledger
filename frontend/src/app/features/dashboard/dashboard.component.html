@@ -49,7 +49,9 @@
         {{ row.unrealized_gain_base != null ? (row.unrealized_gain_base | number: '1.2-2') + ' €' : '—' }}
       </span>
     } @else {
-      <span [class.num]="column.numeric">{{ column.accessor ? column.accessor(row) : row[column.key] }}</span>
+      <span [class.num]="column.numeric">
+        {{ column.accessor ? column.accessor(row) : (column.numeric ? (row[column.key] | number: '1.2-2') : row[column.key]) }}
+      </span>
     }
   </ng-template>
 </pt-table>

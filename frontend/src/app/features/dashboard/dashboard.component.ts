@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
 
   columns: TableColumn<Holding>[] = [
     { key: 'ticker', header: 'Ticker' },
+    { key: 'name', header: 'Name' },
     { key: 'asset_type', header: 'Type' },
     { key: 'quantity', header: 'Qty', numeric: true },
     { key: 'avg_cost', header: 'Avg cost', numeric: true },
@@ -86,6 +87,15 @@ export class DashboardComponent implements OnInit {
             value: Math.round((h.market_value_base ?? h.cost_basis_base) * 100) / 100,
             itemStyle: { color: palette[i % palette.length] },
           })),
+          tooltip: {
+            formatter: (params: any) => {
+              const h = holdings.find((h) => h.ticker === params.name);
+              if (!h) return '';
+              const value = h.market_value_base ?? h.cost_basis_base;
+              const gain = h.unrealized_gain_base ?? 0;
+              return `<strong>${h.ticker} — ${h.name}</strong><br/>Value: €${value.toFixed(2)}`;
+            },
+          },
         },
       ],
     };

@@ -72,11 +72,36 @@ export class ReportsComponent implements OnInit {
 
   private load() {
     this.reportService.getCashFlow(this.granularity).subscribe((data) => {
-      this.cashFlow = data;
-      this.buildCashFlowChart(data);
+      this.cashFlow = this.roundValues(data, [
+        'invested_base',
+        'divested_base',
+        'income_base',
+        'fees_base',
+        'deposits_base',
+        'withdrawals_base',
+        'net_flow_base',
+      ]);
+      this.buildCashFlowChart(this.cashFlow);
     });
-    this.reportService.getIncomeByPeriod(this.granularity).subscribe((data) => (this.income = data));
-    this.reportService.getRealizedGains().subscribe((data) => (this.realizedGains = data));
+    this.reportService.getIncomeByPeriod(this.granularity).subscribe((data) => {
+      this.income = this.roundValues(data, ['income_base']);
+    });
+    this.reportService.getRealizedGains().subscribe((data) => {
+      this.realizedGains = this.roundValues(data, ['proceeds_base', 'cost_basis_base', 'fees_base', 'realized_gain_base']);
+    });
+  }
+
+  private roundValues<T extends object>(data: T[], keys: Array<keyof T>): T[] {
+    return data.map((item) => {
+      const roundedItem = { ...item } as T;
+      keys.forEach((key) => {
+        const value = roundedItem[key as keyof T];
+        if (typeof value === 'number') {
+          (roundedItem as Record<keyof T, unknown>)[key] = Number(value.toFixed(2));
+        }
+      });
+      return roundedItem;
+    });
   }
 
   private buildCashFlowChart(data: CashFlowPeriod[]) {
@@ -87,10 +112,10 @@ export class ReportsComponent implements OnInit {
       xAxis: { type: 'category', data: data.map((d) => d.period) },
       yAxis: { type: 'value', axisLabel: { fontFamily: 'IBM Plex Mono, monospace' } },
       series: [
-        { name: 'Invested', type: 'bar', stack: 'flow', data: data.map((d) => -d.invested_base), itemStyle: { color: '#2B6E64' } },
-        { name: 'Income', type: 'bar', stack: 'flow', data: data.map((d) => d.income_base), itemStyle: { color: '#2E7D4F' } },
-        { name: 'Withdrawals', type: 'bar', stack: 'flow', data: data.map((d) => -d.withdrawals_base), itemStyle: { color: '#B23B3B' } },
-        { name: 'Net flow', type: 'line', data: data.map((d) => d.net_flow_base), itemStyle: { color: '#1C232C' } },
+        { name: 'Invested', type: 'bar', stack: 'flow', data: data.map((d) => Number((-d.invested_base).toFixed(2))), itemStyle: { color: '#2B6E64' } },
+        { name: 'Income', type: 'bar', stack: 'flow', data: data.map((d) => Number(d.income_base.toFixed(2))), itemStyle: { color: '#2E7D4F' } },
+        { name: 'Withdrawals', type: 'bar', stack: 'flow', data: data.map((d) => Number((-d.withdrawals_base).toFixed(2))), itemStyle: { color: '#B23B3B' } },
+        { name: 'Net flow', type: 'line', data: data.map((d) => Number(d.net_flow_base.toFixed(2))), itemStyle: { color: '#1C232C' } },
       ],
     };
   }

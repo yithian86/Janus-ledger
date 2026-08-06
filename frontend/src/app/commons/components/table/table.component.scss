@@ -1,0 +1,86 @@
+.pt-table-wrap {
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.pt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+thead {
+  background: var(--color-surface-sunken);
+}
+
+th {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.pt-table__th--numeric {
+  text-align: right;
+}
+
+.pt-table__th--sortable {
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-ink);
+  }
+}
+
+.pt-table__th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.pt-table__sort-icon {
+  font-size: 0.6rem;
+  color: var(--color-accent);
+  width: 8px;
+  display: inline-block;
+}
+
+td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-ink);
+}
+
+.pt-table__td--numeric {
+  text-align: right;
+}
+
+/* Ledger-style hairline rows: last row has no border, subtle hover to
+   indicate rows are interactive without a heavy highlight */
+.pt-table__row {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  &:hover {
+    background: var(--color-surface-sunken);
+  }
+
+  &:last-child td {
+    border-bottom: none;
+  }
+}
+
+.pt-table__empty {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--color-ink-faint);
+  font-style: italic;
+}

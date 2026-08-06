@@ -1,0 +1,100 @@
+@use "tokens";
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: var(--leading-tight);
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--color-ink);
+}
+
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+
+p { margin: 0 0 var(--space-md) 0; }
+
+a {
+  color: var(--color-accent-ink);
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Visible keyboard focus everywhere — accessibility floor, non-negotiable */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Signature: ledger number treatment ---------- */
+/* Every financial figure in the app should use this class. Tabular figures
+   keep decimal points aligned in columns, exactly like a paper ledger. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.01em;
+}
+
+.num--gain {
+  color: var(--color-gain);
+}
+
+.num--loss {
+  color: var(--color-loss);
+}
+
+.num--muted {
+  color: var(--color-ink-faint);
+}
+
+/* Delta indicator: small triangle + number, used next to any gain/loss figure */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+}
+
+.delta--gain { color: var(--color-gain); }
+.delta--loss { color: var(--color-loss); }
+
+.delta__arrow {
+  font-size: 0.7em;
+}
+
+/* Utility */
+.text-muted { color: var(--color-ink-muted); }
+.text-faint { color: var(--color-ink-faint); }

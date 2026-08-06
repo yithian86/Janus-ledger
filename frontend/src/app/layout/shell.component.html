@@ -1,0 +1,17 @@
+<div class="pt-shell">
+  <aside class="pt-sidebar">
+    <div class="pt-sidebar__brand">
+      <span class="pt-sidebar__brand-mark">◆</span>
+      <span class="pt-sidebar__brand-name">Ledger</span>
+    </div>
+    <nav class="pt-sidebar__nav">
+      <a routerLink="/dashboard" routerLinkActive="pt-sidebar__link--active" class="pt-sidebar__link">Dashboard</a>
+      <a routerLink="/transactions" routerLinkActive="pt-sidebar__link--active" class="pt-sidebar__link">Transactions</a>
+      <a routerLink="/assets" routerLinkActive="pt-sidebar__link--active" class="pt-sidebar__link">Assets</a>
+      <a routerLink="/reports" routerLinkActive="pt-sidebar__link--active" class="pt-sidebar__link">Reports</a>
+    </nav>
+  </aside>
+  <main class="pt-content">
+    <router-outlet />
+  </main>
+</div>

@@ -1,0 +1,38 @@
+<div class="page-header">
+  <div>
+    <h1>Reports</h1>
+    <p class="text-muted">Cash flow, income, and realized gains — all converted to EUR.</p>
+  </div>
+  <pt-select [options]="granularityOptions" [(ngModel)]="granularity" (ngModelChange)="onGranularityChange()" />
+</div>
+
+<div class="tabs">
+  <button class="tab" [class.tab--active]="activeTab === 'cash-flow'" (click)="activeTab = 'cash-flow'">
+    Cash flow
+  </button>
+  <button class="tab" [class.tab--active]="activeTab === 'income'" (click)="activeTab = 'income'">Income</button>
+  <button
+    class="tab"
+    [class.tab--active]="activeTab === 'realized-gains'"
+    (click)="activeTab = 'realized-gains'"
+  >
+    Realized gains
+  </button>
+</div>
+
+@if (activeTab === 'cash-flow') {
+  <div class="chart-card">
+    @if (cashFlowChart) {
+      <div echarts [options]="cashFlowChart" class="chart"></div>
+    }
+  </div>
+  <pt-table [columns]="cashFlowColumns" [rows]="cashFlow" emptyMessage="No data yet." />
+} @else if (activeTab === 'income') {
+  <pt-table [columns]="incomeColumns" [rows]="income" emptyMessage="No dividend or coupon income recorded yet." />
+} @else {
+  <pt-table
+    [columns]="realizedGainColumns"
+    [rows]="realizedGains"
+    emptyMessage="No realized gains yet — sells will show up here with FIFO cost basis applied."
+  />
+}

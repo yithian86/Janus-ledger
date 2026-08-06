@@ -1,0 +1,55 @@
+<h1>Dashboard</h1>
+<p class="text-muted">Your portfolio at a glance, in EUR.</p>
+
+<div class="summary-cards">
+  <div class="summary-card">
+    <span class="summary-card__label">Total market value</span>
+    <span class="num summary-card__value">{{ totalValue | number: '1.2-2' }} €</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-card__label">Total cost basis</span>
+    <span class="num summary-card__value">{{ totalCost | number: '1.2-2' }} €</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-card__label">Unrealized gain</span>
+    <span
+      class="num summary-card__value"
+      [class.num--gain]="totalUnrealized >= 0"
+      [class.num--loss]="totalUnrealized < 0"
+    >
+      {{ totalUnrealized | number: '1.2-2' }} €
+    </span>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Allocation by asset type</h3>
+    @if (allocationChart) {
+      <div echarts [options]="allocationChart" class="chart"></div>
+    }
+  </div>
+  <div class="chart-card">
+    <h3>Allocation by holding</h3>
+    @if (holdingChart) {
+      <div echarts [options]="holdingChart" class="chart"></div>
+    }
+  </div>
+</div>
+
+<h3>Holdings</h3>
+<pt-table [columns]="columns" [rows]="holdings" emptyMessage="No holdings yet — add transactions to see them here.">
+  <ng-template let-row let-column="column">
+    @if (column.key === 'unrealized_gain_base') {
+      <span
+        class="num"
+        [class.num--gain]="(row.unrealized_gain_base ?? 0) >= 0"
+        [class.num--loss]="(row.unrealized_gain_base ?? 0) < 0"
+      >
+        {{ row.unrealized_gain_base != null ? (row.unrealized_gain_base | number: '1.2-2') + ' €' : '—' }}
+      </span>
+    } @else {
+      <span [class.num]="column.numeric">{{ column.accessor ? column.accessor(row) : row[column.key] }}</span>
+    }
+  </ng-template>
+</pt-table>

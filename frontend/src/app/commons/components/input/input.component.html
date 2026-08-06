@@ -1,0 +1,26 @@
+<div class="pt-field">
+  @if (label) {
+    <label class="pt-field__label" [for]="inputId">{{ label }}</label>
+  }
+  <div class="pt-field__control">
+    @if (prefix) {
+      <span class="pt-field__prefix">{{ prefix }}</span>
+    }
+    <input
+      [id]="inputId"
+      class="pt-input"
+      [class.pt-input--numeric]="numeric"
+      [class.pt-input--has-prefix]="!!prefix"
+      [type]="type"
+      [step]="step"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [value]="value ?? ''"
+      (input)="onInput($event)"
+      (blur)="onTouched()"
+    />
+  </div>
+  @if (error) {
+    <span class="pt-field__error">{{ error }}</span>
+  }
+</div>

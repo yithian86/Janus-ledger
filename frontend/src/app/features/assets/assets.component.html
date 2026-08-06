@@ -1,0 +1,42 @@
+<div class="page-header">
+  <div>
+    <h1>Assets</h1>
+    <p class="text-muted">Every stock, ETF, bond, crypto, and cash account you track.</p>
+  </div>
+  <pt-button (click)="openCreate()">+ Add asset</pt-button>
+</div>
+
+<pt-table
+  [columns]="columns"
+  [rows]="assets"
+  [sortKey]="sortKey"
+  [sortDirection]="sortDirection"
+  emptyMessage="No assets yet — add your first one to start tracking transactions."
+  (rowClick)="openEdit($event)"
+  (sortChange)="onSortChange($event)"
+>
+  <ng-template let-row let-column="column">
+    @if (column.key === 'asset_type') {
+      <pt-badge tone="accent">{{ row.asset_type }}</pt-badge>
+    } @else if (column.key === 'ticker') {
+      <strong>{{ row.ticker }}</strong>
+    } @else {
+      <span [class.num]="column.numeric">{{ column.accessor ? column.accessor(row) : row[column.key] }}</span>
+    }
+  </ng-template>
+</pt-table>
+
+<pt-modal [open]="modalOpen" [title]="editingAsset ? 'Edit asset' : 'Add asset'" (close)="closeModal()">
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+    <pt-input label="Ticker" formControlName="ticker" placeholder="e.g. VWCE" />
+    <pt-input label="Name" formControlName="name" placeholder="e.g. Vanguard FTSE All-World" />
+    <pt-select label="Type" formControlName="asset_type" [options]="assetTypeOptions" />
+    <pt-input label="Currency" formControlName="currency" placeholder="e.g. EUR" />
+    <pt-input label="Exchange (optional)" formControlName="exchange" placeholder="e.g. XETRA" />
+    <pt-input label="ISIN (optional)" formControlName="isin" />
+    <div class="form-actions">
+      <pt-button type="button" variant="ghost" (click)="closeModal()">Cancel</pt-button>
+      <pt-button type="submit" [disabled]="form.invalid">Save</pt-button>
+    </div>
+  </form>
+</pt-modal>

@@ -1,0 +1,52 @@
+<div class="page-header">
+  <div>
+    <h1>Transactions</h1>
+    <p class="text-muted">Every buy, sell, dividend, coupon, deposit, withdrawal, and fee.</p>
+  </div>
+  <pt-button (click)="openCreate()" [disabled]="assets.length === 0">+ Add transaction</pt-button>
+</div>
+
+@if (assets.length === 0) {
+  <p class="text-muted">Add at least one asset first, from the Assets page.</p>
+}
+
+<pt-table
+  [columns]="columns"
+  [rows]="rows"
+  emptyMessage="No transactions yet."
+  (rowClick)="openEdit($event)"
+>
+  <ng-template let-row let-column="column">
+    @if (column.key === 'transaction_type') {
+      <pt-badge [tone]="badgeTone(row.transaction_type)">{{ typeLabel(row.transaction_type) }}</pt-badge>
+    } @else if (column.key === 'tickerLabel') {
+      <strong>{{ row.tickerLabel }}</strong>
+    } @else {
+      <span [class.num]="column.numeric">{{ column.accessor ? column.accessor(row) : row[column.key] }}</span>
+    }
+  </ng-template>
+</pt-table>
+
+<pt-modal [open]="modalOpen" [title]="editingTxn ? 'Edit transaction' : 'Add transaction'" (close)="closeModal()">
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+    <pt-select label="Asset" formControlName="asset_id" [options]="assetOptions" placeholder="Select an asset" />
+    <pt-select label="Type" formControlName="transaction_type" [options]="typeOptions" />
+    <pt-input label="Date" type="date" formControlName="date" />
+
+    @if (showQuantityPrice) {
+      <pt-input label="Quantity" type="number" formControlName="quantity" />
+      <pt-input label="Price per unit" type="number" formControlName="price" [prefix]="currencySuffix" />
+    }
+    @if (showAmount) {
+      <pt-input label="Amount" type="number" formControlName="amount" [prefix]="currencySuffix" />
+    }
+
+    <pt-input label="Fees" type="number" formControlName="fees" [prefix]="currencySuffix" />
+    <pt-input label="Currency" formControlName="currency" placeholder="e.g. EUR" />
+
+    <div class="form-actions">
+      <pt-button type="button" variant="ghost" (click)="closeModal()">Cancel</pt-button>
+      <pt-button type="submit" [disabled]="form.invalid">Save</pt-button>
+    </div>
+  </form>
+</pt-modal>

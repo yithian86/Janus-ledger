@@ -1,0 +1,49 @@
+<div class="pt-table-wrap">
+  <table class="pt-table">
+    <thead>
+      <tr>
+        @for (col of columns; track col.key) {
+          <th
+            [class.pt-table__th--numeric]="col.numeric"
+            [class.pt-table__th--sortable]="col.sortable"
+            [style.width]="col.width"
+            (click)="col.sortable && onSort(col.key)"
+          >
+            <span class="pt-table__th-content">
+              {{ col.header }}
+              @if (col.sortable) {
+                <span class="pt-table__sort-icon">
+                  {{ sortKey === col.key ? (sortDirection === 'asc' ? '▲' : '▼') : '' }}
+                </span>
+              }
+            </span>
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows; track trackByFn ? trackByFn(row) : row) {
+        <tr class="pt-table__row" (click)="rowClick.emit(row)">
+          @for (col of columns; track col.key) {
+            <td [class.pt-table__td--numeric]="col.numeric">
+              @if (cellTemplate) {
+                <ng-container
+                  [ngTemplateOutlet]="cellTemplate"
+                  [ngTemplateOutletContext]="{ $implicit: row, column: col }"
+                />
+              } @else {
+                <span [class.num]="col.numeric">{{ cellValue(row, col) }}</span>
+              }
+            </td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td [attr.colspan]="columns.length" class="pt-table__empty">
+            {{ emptyMessage }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

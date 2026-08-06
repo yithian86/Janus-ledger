@@ -1,0 +1,20 @@
+<div class="pt-field">
+  @if (label) {
+    <label class="pt-field__label" [for]="selectId">{{ label }}</label>
+  }
+  <select
+    [id]="selectId"
+    class="pt-select"
+    [disabled]="disabled"
+    [value]="value ?? ''"
+    (change)="onSelect($event)"
+    (blur)="onTouched()"
+  >
+    @if (placeholder) {
+      <option value="" disabled selected>{{ placeholder }}</option>
+    }
+    @for (opt of options; track opt.value) {
+      <option [value]="opt.value">{{ opt.label }}</option>
+    }
+  </select>
+</div>

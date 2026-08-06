@@ -1,0 +1,13 @@
+@if (open) {
+  <div class="pt-modal-backdrop" (click)="close.emit()">
+    <div class="pt-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <div class="pt-modal__header">
+        <h3>{{ title }}</h3>
+        <button class="pt-modal__close" type="button" (click)="close.emit()" aria-label="Close">×</button>
+      </div>
+      <div class="pt-modal__body">
+        <ng-content />
+      </div>
+    </div>
+  </div>
+}

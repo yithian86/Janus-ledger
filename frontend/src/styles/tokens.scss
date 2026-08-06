@@ -1,0 +1,88 @@
+/*
+  Design tokens — every custom component consumes these, never hardcoded
+  values. This is the entire "theme" of the app. Change values here to
+  re-theme the whole application (e.g. to add a dark mode later by
+  swapping this block under a [data-theme="dark"] selector).
+
+  Design direction: a "ledger" aesthetic — this is a financial record-
+  keeping tool, so it should feel like a well-kept paper ledger rendered
+  digitally, not a generic SaaS dashboard. Serif headings for editorial
+  weight, monospace tabular figures for every number (the signature
+  element — it's how real ledgers align columns), restrained teal-ink
+  accent instead of a decorative brand color.
+*/
+
+:root {
+  /* ---------- Color: surfaces ---------- */
+  --color-bg: #F5F6F4;
+  --color-surface: #FFFFFF;
+  --color-surface-sunken: #ECEEEA;
+  --color-border: #DADFD9;
+  --color-border-strong: #B9C1BB;
+
+  /* ---------- Color: ink (text) ---------- */
+  --color-ink: #1C232C;
+  --color-ink-muted: #4B5563;
+  --color-ink-faint: #7C8592;
+
+  /* ---------- Color: accent & semantic ---------- */
+  --color-accent: #2B6E64;
+  --color-accent-ink: #1E4F47;
+  --color-accent-surface: #E4EDEB;
+
+  --color-gain: #2E7D4F;
+  --color-gain-surface: #E4F1E8;
+  --color-loss: #B23B3B;
+  --color-loss-surface: #F7E7E7;
+
+  --color-focus: #2B6E64;
+
+  /* ---------- Color: sidebar (inverted) ---------- */
+  --color-sidebar-bg: #1C232C;
+  --color-sidebar-ink: #E7E9E4;
+  --color-sidebar-ink-muted: #8E97A0;
+  --color-sidebar-active: #2B6E64;
+
+  /* ---------- Typography ---------- */
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SF Mono", Consolas, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+
+  /* ---------- Spacing scale ---------- */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* ---------- Shape ---------- */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* ---------- Elevation ---------- */
+  --shadow-sm: 0 1px 2px rgba(28, 35, 44, 0.06);
+  --shadow-md: 0 4px 12px rgba(28, 35, 44, 0.08);
+  --shadow-modal: 0 12px 40px rgba(28, 35, 44, 0.22);
+
+  /* ---------- Motion ---------- */
+  --transition-fast: 120ms ease;
+  --transition-base: 200ms ease;
+
+  /* ---------- Layout ---------- */
+  --sidebar-width: 232px;
+  --content-max-width: 1280px;
+}

@@ -4,6 +4,19 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
+backup_database() {
+  local db_file="$ROOT_DIR/JanusLedgerDB"
+  if [[ -f "${db_file}.db" ]]; then
+    local timestamp
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    local backup_file="${db_file}.${timestamp}.db"
+    cp --preserve=mode,timestamps "${db_file}.db" "$backup_file"
+    echo "Created database backup: $backup_file"
+  else
+    echo "Database file not found, skipping backup: $db_file"
+  fi
+}
+
 choose_python() {
   if [[ -x "$ROOT_DIR/.venv311/bin/python" ]]; then
     echo "$ROOT_DIR/.venv311/bin/python"
@@ -20,6 +33,7 @@ choose_python() {
   fi
 }
 
+backup_database
 PYTHON_BIN="$(choose_python)"
 
 if [[ ! -x "$PYTHON_BIN" ]]; then

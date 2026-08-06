@@ -25,7 +25,7 @@
     } @else if (column.key === 'assetLabel') {
       <strong>{{ row.assetLabel }}</strong>
     } @else {
-      <span [class.num]="column.numeric">{{ column.accessor ? column.accessor(row) : row[column.key] }}</span>
+      <span [class.num]="column.numeric">{{ getCellDisplayValue(row, column) }}</span>
     }
   </ng-template>
 </pt-table>

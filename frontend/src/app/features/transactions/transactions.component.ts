@@ -169,6 +169,24 @@ export class TransactionsComponent implements OnInit {
     return BADGE_TONE_BY_TYPE[type];
   }
 
+  formatDecimal(value: number | string | null | undefined): string {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+
+    const numericValue = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(numericValue) ? numericValue.toFixed(2) : '';
+  }
+
+  getCellDisplayValue(row: TransactionRow, column: TableColumn<TransactionRow>) {
+    const value = column.accessor ? column.accessor(row) : row[column.key as keyof TransactionRow];
+    if (['price', 'fees', 'amount'].includes(column.key)) {
+      return this.formatDecimal(value as number | string | null | undefined);
+    }
+
+    return value;
+  }
+
   openCreate() {
     this.editingTxn = null;
     this.form.reset({

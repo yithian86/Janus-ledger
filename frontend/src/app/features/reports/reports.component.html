@@ -26,7 +26,23 @@
       <div echarts [options]="cashFlowChart" class="chart"></div>
     }
   </div>
-  <pt-table [columns]="cashFlowColumns" [rows]="cashFlow" emptyMessage="No data yet." />
+  <pt-table
+    [columns]="cashFlowColumns"
+    [rows]="cashFlow"
+    emptyMessage="No data yet."
+  >
+    <ng-template let-row let-column="column">
+      @if (column.key === 'period') {
+        <span>
+          {{ row[column.key]}}
+        </span>
+      } @else{
+        <span [class.num]="column.numeric">
+          {{ row[column.key] | number: '1.2-2' }}
+        </span>
+      }
+    </ng-template>
+  </pt-table>
 } @else if (activeTab === 'income') {
   <pt-table [columns]="incomeColumns" [rows]="income" emptyMessage="No dividend or coupon income recorded yet.">
     <ng-template let-row let-column="column">

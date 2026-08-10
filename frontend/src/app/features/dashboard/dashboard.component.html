@@ -119,7 +119,17 @@
       }
     </div>
     <div class="chart-card">
-      <h3>Allocation by holding</h3>
+      <div class="chart-card__header">
+        <h3>Allocation by holding</h3>
+        <div class="chart-card__controls">
+          <pt-select
+            label="Asset type"
+            [(ngModel)]="holdingChartAssetType"
+            (ngModelChange)="updateHoldingChartAssetType()"
+            [options]="assetTypeOptions"
+          />
+        </div>
+      </div>
       @if (holdingChart) {
         <div echarts [options]="holdingChart" class="chart"></div>
       }

@@ -23,6 +23,7 @@ export class DashboardComponent implements OnInit {
   holdings: Holding[] = [];
   filteredHoldings: Holding[] = [];
   selectedAssetType = '';
+  holdingChartAssetType = '';
   assetTypeOptions: SelectOption[] = [
     { value: '', label: 'All types' },
     { value: 'stock', label: 'Stock' },
@@ -86,6 +87,11 @@ export class DashboardComponent implements OnInit {
       this.loadData(true);
     }
   }
+
+  updateHoldingChartAssetType() {
+    this.buildCharts(this.holdings);
+  }
+
   onSortChange(event: { key: string; direction: SortDirection }) {
     this.sortKey = event.direction ? event.key : null;
     this.sortDirection = event.direction;
@@ -167,6 +173,14 @@ export class DashboardComponent implements OnInit {
       ],
     };
 
+    const holdingChartData = holdings
+      .filter((h) => !this.holdingChartAssetType || h.asset_type === this.holdingChartAssetType)
+      .map((h, i) => ({
+        name: h.ticker,
+        value: Math.round((h.market_value_base ?? h.cost_basis_base) * 100) / 100,
+        itemStyle: { color: palette[i % palette.length] },
+      }));
+
     this.holdingChart = {
       tooltip: {
         trigger: 'item',
@@ -183,11 +197,7 @@ export class DashboardComponent implements OnInit {
           radius: ['45%', '75%'],
           itemStyle: { borderColor: '#F5F6F4', borderWidth: 2 },
           label: { fontFamily: 'IBM Plex Mono, monospace', fontSize: 12 },
-          data: holdings.map((h, i) => ({
-            name: h.ticker,
-            value: Math.round((h.market_value_base ?? h.cost_basis_base) * 100) / 100,
-            itemStyle: { color: palette[i % palette.length] },
-          })),
+          data: holdingChartData,
           tooltip: {
             formatter: (params: any) => {
               const data = Array.isArray(params) ? params[0] : params;

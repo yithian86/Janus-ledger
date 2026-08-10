@@ -68,6 +68,19 @@
   padding: var(--space-lg);
 }
 
+.chart-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.chart-card__controls {
+  min-width: 160px;
+  max-width: 240px;
+}
+
 .chart {
   height: 280px;
   width: 100%;

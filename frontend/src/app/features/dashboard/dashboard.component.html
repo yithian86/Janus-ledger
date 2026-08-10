@@ -101,13 +101,33 @@
     </div>
     <div class="summary-card">
       <span class="summary-card__label">Unrealized gain</span>
-      <span
-        class="num summary-card__value"
-        [class.num--gain]="totalUnrealized >= 0"
-        [class.num--loss]="totalUnrealized < 0"
-      >
-        {{ totalUnrealized | number: '1.2-2' }} €
-      </span>
+      <div class="summary-card__value-row">
+        <div class="summary-card__value-group">
+          <span
+            class="num summary-card__value"
+            [class.num--gain]="totalUnrealized >= 0"
+            [class.num--loss]="totalUnrealized < 0"
+          >
+            {{ totalUnrealized | number: '1.2-2' }} €
+          </span>
+        </div>
+        @if (totalUnrealizedPercentage !== null) {
+          <div class="summary-card__meta-group">
+            @if (totalUnrealized > 0) {
+              <span class="summary-card__arrow summary-card__arrow--up" aria-hidden="true">↑</span>
+            } @else if (totalUnrealized < 0) {
+              <span class="summary-card__arrow summary-card__arrow--down" aria-hidden="true">↓</span>
+            }
+            <span
+              class="summary-card__meta"
+              [class.num--gain]="totalUnrealizedPercentage >= 0"
+              [class.num--loss]="totalUnrealizedPercentage < 0"
+            >
+              {{ totalUnrealizedPercentage | number: '1.2-2' }} %
+            </span>
+          </div>
+        }
+      </div>
     </div>
   </div>
 

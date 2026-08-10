@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit {
   totalValue = 0;
   totalCost = 0;
   totalUnrealized = 0;
+  totalUnrealizedPercentage: number | null = null;
   isLoading = false;
   lastRefreshed?: Date;
 
@@ -70,6 +71,7 @@ export class DashboardComponent implements OnInit {
         this.totalValue = holdings.reduce((sum, h) => sum + (h.market_value_base ?? h.cost_basis_base), 0);
         this.totalCost = holdings.reduce((sum, h) => sum + h.cost_basis_base, 0);
         this.totalUnrealized = holdings.reduce((sum, h) => sum + (h.unrealized_gain_base ?? 0), 0);
+        this.totalUnrealizedPercentage = this.totalCost !== 0 ? (this.totalUnrealized / this.totalCost) * 100 : null;
         this.buildCharts(holdings);
         this.applyFiltersAndSort();
         this.lastRefreshed = new Date();

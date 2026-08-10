@@ -37,8 +37,47 @@
   letter-spacing: 0.04em;
 }
 
+.summary-card__value-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.summary-card__value-group {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
 .summary-card__value {
   font-size: var(--text-2xl);
+}
+
+.summary-card__arrow {
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.summary-card__arrow--up {
+  color: var(--color-success, #2b6e64);
+}
+
+.summary-card__arrow--down {
+  color: var(--color-danger, #c0392b);
+}
+
+.summary-card__meta-group {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
+}
+
+.summary-card__meta {
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .chart-grid {

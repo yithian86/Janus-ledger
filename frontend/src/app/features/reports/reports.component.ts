@@ -8,6 +8,7 @@ import { ReportService } from '../../core/services/report.service';
 import { CashFlowPeriod, IncomeByPeriod, RealizedGain, Granularity } from '../../core/models/report.model';
 import { TableComponent, TableColumn } from '../../commons/components/table/table.component';
 import { SelectComponent, SelectOption } from '../../commons/components/select/select.component';
+import { AssetService } from '../../core/services/asset.service';
 
 
 type Tab = 'cash-flow' | 'income' | 'realized-gains';
@@ -26,6 +27,7 @@ const GRANULARITY_OPTIONS: SelectOption[] = [
 })
 export class ReportsComponent implements OnInit {
   private readonly reportService = inject(ReportService);
+  private readonly assetsService = inject(AssetService);
 
   activeTab: Tab = 'cash-flow';
   granularity: Granularity = 'month';
@@ -49,13 +51,15 @@ export class ReportsComponent implements OnInit {
 
   incomeColumns: TableColumn<IncomeByPeriod>[] = [
     { key: 'period', header: 'Period' },
-    { key: 'ticker', header: 'Asset' },
+    { key: 'ticker', header: 'Asset ID' },
+    { key: 'asset_name', header: 'Asset Name' },
     { key: 'income_base', header: 'Income (€)', numeric: true },
   ];
 
   realizedGainColumns: TableColumn<RealizedGain>[] = [
     { key: 'year', header: 'Year' },
-    { key: 'ticker', header: 'Asset' },
+    { key: 'ticker', header: 'Asset ID' },
+    { key: 'asset_name', header: 'Asset Name' },
     { key: 'proceeds_base', header: 'Proceeds', numeric: true },
     { key: 'cost_basis_base', header: 'Cost basis', numeric: true },
     { key: 'fees_base', header: 'Fees', numeric: true },
@@ -64,6 +68,14 @@ export class ReportsComponent implements OnInit {
 
   ngOnInit() {
     this.load();
+  }
+
+  get assetsMap () {
+    return this.assetsService.assetMap;
+  }
+
+  public getAsset = (assetId: string) => {
+    return this.assetsService.assetMap.get(assetId)?.name;
   }
 
   onGranularityChange() {

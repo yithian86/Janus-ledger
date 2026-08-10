@@ -28,11 +28,43 @@
   </div>
   <pt-table [columns]="cashFlowColumns" [rows]="cashFlow" emptyMessage="No data yet." />
 } @else if (activeTab === 'income') {
-  <pt-table [columns]="incomeColumns" [rows]="income" emptyMessage="No dividend or coupon income recorded yet." />
+  <pt-table [columns]="incomeColumns" [rows]="income" emptyMessage="No dividend or coupon income recorded yet.">
+    <ng-template let-row let-column="column">
+      @if (column.key === 'income_base') {
+        <span [class.num]="column.numeric">
+          {{ column.accessor ? column.accessor(row) : (column.numeric ? (row[column.key] | number: '1.2-2') : row[column.key]) }}
+        </span>
+      } @else if (column.key === 'asset_name') {
+        <span>
+          {{ getAsset(row['ticker']) }}
+        </span>
+      } @else{
+        <span>
+          {{ row[column.key]}}
+        </span>
+      }
+    </ng-template>
+  </pt-table>
 } @else {
   <pt-table
     [columns]="realizedGainColumns"
     [rows]="realizedGains"
     emptyMessage="No realized gains yet — sells will show up here with FIFO cost basis applied."
-  />
+  >
+    <ng-template let-row let-column="column">
+      @if (column.key === 'proceeds_base' || column.key === 'cost_basis_base' || column.key === 'fees_base' || column.key === 'realized_gain_base') {
+        <span [class.num]="column.numeric">
+          {{ column.accessor ? column.accessor(row) : (column.numeric ? (row[column.key] | number: '1.2-2') : row[column.key]) }}
+        </span>
+      } @else if (column.key === 'asset_name') {
+        <span>
+          {{ getAsset(row['ticker']) }}
+        </span>
+      } @else{
+        <span>
+          {{ row[column.key]}}
+        </span>
+      }
+    </ng-template>
+  </pt-table>
 }

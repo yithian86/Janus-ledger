@@ -146,9 +146,12 @@ def compute_holdings(db: Session, latest_prices: dict[int, float]) -> list[dict]
         current_price = latest_prices.get(asset.id)
         market_value_base = None
         unrealized_gain_base = None
+        unrealized_gain_percentage = None
         if current_price is not None:
             market_value_base = convert_to_base(db, quantity * current_price, asset.currency, date_type.today())
             unrealized_gain_base = market_value_base - cost_basis_base
+            if cost_basis_base and abs(cost_basis_base) > 1e-9:
+                unrealized_gain_percentage = (unrealized_gain_base / cost_basis_base) * 100.0
 
         holdings.append({
             "asset_id": asset.id,
@@ -162,6 +165,7 @@ def compute_holdings(db: Session, latest_prices: dict[int, float]) -> list[dict]
             "current_price": current_price,
             "market_value_base": market_value_base,
             "unrealized_gain_base": unrealized_gain_base,
+            "unrealized_gain_percentage": unrealized_gain_percentage,
         })
 
     return holdings

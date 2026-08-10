@@ -44,14 +44,15 @@ export class DashboardComponent implements OnInit {
   holdingChart?: EChartsOption;
 
   columns: TableColumn<Holding>[] = [
-    { key: 'ticker', header: 'Ticker' },
     { key: 'name', header: 'Name', sortable: true },
+    { key: 'ticker', header: 'Ticker' },
     { key: 'asset_type', header: 'Type', sortable: true },
     { key: 'quantity', header: 'Qty', numeric: true },
     { key: 'avg_cost', header: 'Avg cost', numeric: true },
     { key: 'current_price', header: 'Price', numeric: true },
-    { key: 'market_value_base', header: 'Value (€)', numeric: true },
+    { key: 'market_value_base', header: 'Value (€)', numeric: true, sortable: true },
     { key: 'unrealized_gain_base', header: 'Unrealized gain', numeric: true },
+    { key: 'unrealized_gain_percentage', header: ' ', numeric: true },
   ];
 
   ngOnInit() {

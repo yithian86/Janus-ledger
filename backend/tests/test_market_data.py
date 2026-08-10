@@ -96,3 +96,4 @@ def test_holdings_with_market_data_integration(db_session: Session):
     assert holding["current_price"] == 220.50
     # 10 shares * 220.50 USD * 0.90 EUR/USD = 1984.50 EUR
     assert pytest.approx(holding["market_value_base"], 0.01) == 1984.50
+    assert pytest.approx(holding["unrealized_gain_percentage"], 0.01) == 47.0

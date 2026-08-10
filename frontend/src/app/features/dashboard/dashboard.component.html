@@ -141,7 +141,11 @@
     emptyMessage="No holdings yet — add transactions to see them here."
   >
     <ng-template let-row let-column="column">
-      @if (column.key === 'unrealized_gain_base') {
+      @if (column.key === 'asset_type') {
+        <span class="asset-type">
+          {{ row.asset_type.toUpperCase() }}
+        </span>
+      } @else if (column.key === 'unrealized_gain_base') {
         <span
           class="num"
           [class.num--gain]="(row.unrealized_gain_base ?? 0) >= 0"
@@ -149,9 +153,13 @@
         >
           {{ row.unrealized_gain_base != null ? (row.unrealized_gain_base | number: '1.2-2') + ' €' : '—' }}
         </span>
-      } @else if (column.key === 'asset_type') {
-        <span class="asset-type">
-          {{ row.asset_type.toUpperCase() }}
+      } @else if (column.key === 'unrealized_gain_percentage') {
+        <span
+          class="num"
+          [class.num--gain]="(row.unrealized_gain_percentage ?? 0) >= 0"
+          [class.num--loss]="(row.unrealized_gain_percentage ?? 0) < 0"
+        >
+          {{ row.unrealized_gain_percentage != null ? (row.unrealized_gain_percentage | number: '1.2-2') + ' %' : '—' }}
         </span>
       } @else {
         <span [class.num]="column.numeric">

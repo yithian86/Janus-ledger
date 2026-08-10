@@ -12,6 +12,7 @@ export interface Holding {
   current_price?: number | null;
   market_value_base?: number | null;
   unrealized_gain_base?: number | null;
+  unrealized_gain_percentage?: number | null;
 }
 
 export interface RealizedGain {

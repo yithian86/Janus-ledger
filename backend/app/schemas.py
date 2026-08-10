@@ -163,6 +163,7 @@ class HoldingOut(BaseModel):
     current_price: Optional[float] = None
     market_value_base: Optional[float] = None
     unrealized_gain_base: Optional[float] = None
+    unrealized_gain_percentage: Optional[float] = None
 
 
 class RealizedGainOut(BaseModel):

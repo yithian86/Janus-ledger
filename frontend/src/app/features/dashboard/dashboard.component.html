@@ -121,8 +121,25 @@
     </div>
   </div>
 
-  <h3>Holdings</h3>
-  <pt-table [columns]="columns" [rows]="holdings" emptyMessage="No holdings yet — add transactions to see them here.">
+  <div class="holdings-header">
+    <h3>Holdings</h3>
+    <div class="holdings-controls">
+      <pt-select
+        label="Asset type"
+        [(ngModel)]="selectedAssetType"
+        (ngModelChange)="applyFiltersAndSort()"
+        [options]="assetTypeOptions"
+      />
+    </div>
+  </div>
+  <pt-table
+    [columns]="columns"
+    [rows]="filteredHoldings"
+    [sortKey]="sortKey"
+    [sortDirection]="sortDirection"
+    (sortChange)="onSortChange($event)"
+    emptyMessage="No holdings yet — add transactions to see them here."
+  >
     <ng-template let-row let-column="column">
       @if (column.key === 'unrealized_gain_base') {
         <span

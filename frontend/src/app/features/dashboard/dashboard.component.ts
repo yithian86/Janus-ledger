@@ -1,16 +1,18 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import type { EChartsOption } from 'echarts';
 
 import { ReportService } from '../../core/services/report.service';
 import { Holding } from '../../core/models/report.model';
-import { TableComponent, TableColumn } from '../../commons/components/table/table.component';
+import { TableComponent, TableColumn, SortDirection } from '../../commons/components/table/table.component';
+import { SelectComponent, SelectOption } from '../../commons/components/select/select.component';
 
 @Component({
   selector: 'pt-dashboard',
   standalone: true,
-  imports: [CommonModule, NgxEchartsDirective, TableComponent],
+  imports: [CommonModule, FormsModule, NgxEchartsDirective, TableComponent, SelectComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -18,6 +20,20 @@ export class DashboardComponent implements OnInit {
   private readonly reportService = inject(ReportService);
 
   holdings: Holding[] = [];
+  filteredHoldings: Holding[] = [];
+  selectedAssetType = '';
+  assetTypeOptions: SelectOption[] = [
+    { value: '', label: 'All types' },
+    { value: 'stock', label: 'Stock' },
+    { value: 'etf', label: 'ETF' },
+    { value: 'etc', label: 'ETC' },
+    { value: 'bond', label: 'Bond' },
+    { value: 'cash', label: 'Cash' },
+    { value: 'crypto', label: 'Crypto' },
+  ];
+  sortKey: string | null = 'asset_type';
+  sortDirection: SortDirection = 'asc';
+
   totalValue = 0;
   totalCost = 0;
   totalUnrealized = 0;
@@ -29,8 +45,8 @@ export class DashboardComponent implements OnInit {
 
   columns: TableColumn<Holding>[] = [
     { key: 'ticker', header: 'Ticker' },
-    { key: 'name', header: 'Name' },
-    { key: 'asset_type', header: 'Type' },
+    { key: 'name', header: 'Name', sortable: true },
+    { key: 'asset_type', header: 'Type', sortable: true },
     { key: 'quantity', header: 'Qty', numeric: true },
     { key: 'avg_cost', header: 'Avg cost', numeric: true },
     { key: 'current_price', header: 'Price', numeric: true },
@@ -52,6 +68,7 @@ export class DashboardComponent implements OnInit {
         this.totalCost = holdings.reduce((sum, h) => sum + h.cost_basis_base, 0);
         this.totalUnrealized = holdings.reduce((sum, h) => sum + (h.unrealized_gain_base ?? 0), 0);
         this.buildCharts(holdings);
+        this.applyFiltersAndSort();
         this.lastRefreshed = new Date();
         this.isLoading = false;
       },
@@ -67,6 +84,42 @@ export class DashboardComponent implements OnInit {
       this.loadData(true);
     }
   }
+  onSortChange(event: { key: string; direction: SortDirection }) {
+    this.sortKey = event.direction ? event.key : null;
+    this.sortDirection = event.direction;
+    this.applyFiltersAndSort();
+  }
+
+  applyFiltersAndSort() {
+    const filtered = this.selectedAssetType
+      ? this.holdings.filter((holding) => holding.asset_type === this.selectedAssetType)
+      : [...this.holdings];
+
+    if (!this.sortKey || !this.sortDirection) {
+      this.filteredHoldings = filtered;
+      return;
+    }
+
+    const direction = this.sortDirection === 'asc' ? 1 : -1;
+    this.filteredHoldings = [...filtered].sort((a, b) => {
+      const valueA = (a as Record<string, any>)[this.sortKey!];
+      const valueB = (b as Record<string, any>)[this.sortKey!];
+
+      if (valueA == null && valueB == null) return 0;
+      if (valueA == null) return -1 * direction;
+      if (valueB == null) return 1 * direction;
+
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        return (valueA - valueB) * direction;
+      }
+
+      const stringA = String(valueA).toLowerCase();
+      const stringB = String(valueB).toLowerCase();
+      const compareResult = stringA < stringB ? -1 : stringA > stringB ? 1 : 0;
+      return compareResult * direction;
+    });
+  }
+
 
 
 

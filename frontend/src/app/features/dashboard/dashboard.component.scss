@@ -33,6 +33,19 @@
   margin-bottom: var(--space-xl);
 }
 
+.holdings-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.holdings-controls {
+  min-width: 180px;
+  max-width: 280px;
+}
+
 .chart-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

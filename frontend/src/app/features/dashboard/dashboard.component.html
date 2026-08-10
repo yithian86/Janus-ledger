@@ -1,61 +1,132 @@
 <h1>Dashboard</h1>
-<p class="text-muted">Your portfolio at a glance, in EUR.</p>
-
-<div class="summary-cards">
-  <div class="summary-card">
-    <span class="summary-card__label">Total market value</span>
-    <span class="num summary-card__value">{{ totalValue | number: '1.2-2' }} €</span>
-  </div>
-  <div class="summary-card">
-    <span class="summary-card__label">Total cost basis</span>
-    <span class="num summary-card__value">{{ totalCost | number: '1.2-2' }} €</span>
-  </div>
-  <div class="summary-card">
-    <span class="summary-card__label">Unrealized gain</span>
-    <span
-      class="num summary-card__value"
-      [class.num--gain]="totalUnrealized >= 0"
-      [class.num--loss]="totalUnrealized < 0"
-    >
-      {{ totalUnrealized | number: '1.2-2' }} €
+<p class="text-muted">
+  Your portfolio at a glance, in EUR.
+  @if (isLoading) {
+    <span class="live-indicator--loading">
+      <span class="pulse-dot"></span> Fetching live market prices...
     </span>
-  </div>
-</div>
+  } @else if (lastRefreshed) {
+    <span class="live-indicator">• Live prices updated {{ lastRefreshed | date: 'shortTime' }}</span>
+  }
+</p>
 
-<div class="chart-grid">
-  <div class="chart-card">
-    <h3>Allocation by asset type</h3>
-    @if (allocationChart) {
-      <div echarts [options]="allocationChart" class="chart"></div>
-    }
+@if (isLoading) {
+  <!-- Skeleton View: 3 tiles on top -->
+  <div class="summary-cards" aria-busy="true" aria-label="Loading portfolio summary">
+    <div class="summary-card">
+      <span class="skeleton skeleton--text" style="width: 45%;"></span>
+      <span class="skeleton skeleton--value" style="width: 75%; margin-top: 6px;"></span>
+    </div>
+    <div class="summary-card">
+      <span class="skeleton skeleton--text" style="width: 40%;"></span>
+      <span class="skeleton skeleton--value" style="width: 65%; margin-top: 6px;"></span>
+    </div>
+    <div class="summary-card">
+      <span class="skeleton skeleton--text" style="width: 35%;"></span>
+      <span class="skeleton skeleton--value" style="width: 60%; margin-top: 6px;"></span>
+    </div>
   </div>
-  <div class="chart-card">
-    <h3>Allocation by holding</h3>
-    @if (holdingChart) {
-      <div echarts [options]="holdingChart" class="chart"></div>
-    }
-  </div>
-</div>
 
-<h3>Holdings</h3>
-<pt-table [columns]="columns" [rows]="holdings" emptyMessage="No holdings yet — add transactions to see them here.">
-  <ng-template let-row let-column="column">
-    @if (column.key === 'unrealized_gain_base') {
+  <!-- Skeleton View: 2 chart cards -->
+  <div class="chart-grid" aria-busy="true" aria-label="Loading charts">
+    <div class="chart-card">
+      <div class="skeleton skeleton--title" style="width: 55%; margin-bottom: 20px;"></div>
+      <div class="chart-skeleton-body">
+        <div class="skeleton skeleton--circle" style="width: 170px; height: 170px;"></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="skeleton skeleton--title" style="width: 50%; margin-bottom: 20px;"></div>
+      <div class="chart-skeleton-body">
+        <div class="skeleton skeleton--circle" style="width: 170px; height: 170px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skeleton View: Holdings Table -->
+  <div class="table-skeleton-card" aria-busy="true" aria-label="Loading holdings table">
+    <div class="skeleton skeleton--title" style="width: 100px; margin-bottom: 16px;"></div>
+    <div class="table-skeleton">
+      <div class="table-skeleton__head">
+        <div class="skeleton" style="width: 10%;"></div>
+        <div class="skeleton" style="width: 25%;"></div>
+        <div class="skeleton" style="width: 10%;"></div>
+        <div class="skeleton" style="width: 10%;"></div>
+        <div class="skeleton" style="width: 12%;"></div>
+        <div class="skeleton" style="width: 12%;"></div>
+        <div class="skeleton" style="width: 15%;"></div>
+      </div>
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <div class="table-skeleton__row">
+          <div class="skeleton" style="width: 12%;"></div>
+          <div class="skeleton" style="width: 28%;"></div>
+          <div class="skeleton" style="width: 8%;"></div>
+          <div class="skeleton" style="width: 10%;"></div>
+          <div class="skeleton" style="width: 12%;"></div>
+          <div class="skeleton" style="width: 14%;"></div>
+          <div class="skeleton" style="width: 12%;"></div>
+        </div>
+      }
+    </div>
+  </div>
+} @else {
+  <!-- Real Content View -->
+  <div class="summary-cards">
+    <div class="summary-card">
+      <span class="summary-card__label">Total market value</span>
+      <span class="num summary-card__value">{{ totalValue | number: '1.2-2' }} €</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-card__label">Total cost basis</span>
+      <span class="num summary-card__value">{{ totalCost | number: '1.2-2' }} €</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-card__label">Unrealized gain</span>
       <span
-        class="num"
-        [class.num--gain]="(row.unrealized_gain_base ?? 0) >= 0"
-        [class.num--loss]="(row.unrealized_gain_base ?? 0) < 0"
+        class="num summary-card__value"
+        [class.num--gain]="totalUnrealized >= 0"
+        [class.num--loss]="totalUnrealized < 0"
       >
-        {{ row.unrealized_gain_base != null ? (row.unrealized_gain_base | number: '1.2-2') + ' €' : '—' }}
+        {{ totalUnrealized | number: '1.2-2' }} €
       </span>
-    } @else if (column.key === 'asset_type') {
-      <span class="asset-type">
-        {{ row.asset_type.toUpperCase() }}
-      </span>
-    } @else {
-      <span [class.num]="column.numeric">
-        {{ column.accessor ? column.accessor(row) : (column.numeric ? (row[column.key] | number: '1.2-2') : row[column.key]) }}
-      </span>
-    }
-  </ng-template>
-</pt-table>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Allocation by asset type</h3>
+      @if (allocationChart) {
+        <div echarts [options]="allocationChart" class="chart"></div>
+      }
+    </div>
+    <div class="chart-card">
+      <h3>Allocation by holding</h3>
+      @if (holdingChart) {
+        <div echarts [options]="holdingChart" class="chart"></div>
+      }
+    </div>
+  </div>
+
+  <h3>Holdings</h3>
+  <pt-table [columns]="columns" [rows]="holdings" emptyMessage="No holdings yet — add transactions to see them here.">
+    <ng-template let-row let-column="column">
+      @if (column.key === 'unrealized_gain_base') {
+        <span
+          class="num"
+          [class.num--gain]="(row.unrealized_gain_base ?? 0) >= 0"
+          [class.num--loss]="(row.unrealized_gain_base ?? 0) < 0"
+        >
+          {{ row.unrealized_gain_base != null ? (row.unrealized_gain_base | number: '1.2-2') + ' €' : '—' }}
+        </span>
+      } @else if (column.key === 'asset_type') {
+        <span class="asset-type">
+          {{ row.asset_type.toUpperCase() }}
+        </span>
+      } @else {
+        <span [class.num]="column.numeric">
+          {{ column.accessor ? column.accessor(row) : (column.numeric ? (row[column.key] | number: '1.2-2') : row[column.key]) }}
+        </span>
+      }
+    </ng-template>
+  </pt-table>
+}

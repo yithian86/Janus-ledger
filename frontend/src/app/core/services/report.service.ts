@@ -7,9 +7,10 @@ import { Holding, RealizedGain, CashFlowPeriod, IncomeByPeriod, Granularity } fr
 export class ReportService {
   private readonly api = inject(ApiService);
 
-  getHoldings(): Observable<Holding[]> {
-    return this.api.get<Holding[]>('/reports/holdings');
+  getHoldings(refreshMarketData: boolean = true): Observable<Holding[]> {
+    return this.api.get<Holding[]>('/reports/holdings', { refresh_market_data: refreshMarketData });
   }
+
 
   getRealizedGains(year?: number): Observable<RealizedGain[]> {
     return this.api.get<RealizedGain[]>('/reports/realized-gains', { year });

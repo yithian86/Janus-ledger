@@ -4,3 +4,5 @@ sqlalchemy==2.0.35
 pydantic==2.9.2
 pandas==2.2.3
 python-dateutil==2.9.0
+yfinance==0.2.43
+

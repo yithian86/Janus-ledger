@@ -191,3 +191,11 @@ class IncomeByPeriodOut(BaseModel):
     asset_id: int
     ticker: str
     income_base: float
+
+
+# ---------- Market Data Sync ----------
+
+class MarketDataSyncOut(BaseModel):
+    prices: dict[int, float]
+    fx_rates: dict[str, float]
+

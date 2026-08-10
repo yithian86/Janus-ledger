@@ -8,6 +8,8 @@ from app.database import get_db
 from app import models, schemas
 from app.services import fifo, aggregation
 
+from app.services.market_data import market_data_service
+
 router = APIRouter(prefix="/reports", tags=["reports"])
 
 
@@ -31,9 +33,16 @@ def _latest_prices(db: Session) -> dict[int, float]:
 
 
 @router.get("/holdings", response_model=list[schemas.HoldingOut])
-def holdings(db: Session = Depends(get_db)):
-    latest_prices = _latest_prices(db)
-    return fifo.compute_holdings(db, latest_prices)
+def holdings(refresh_market_data: bool = True, db: Session = Depends(get_db)):
+    prices = _latest_prices(db)
+    if refresh_market_data:
+        try:
+            live_prices = market_data_service.fetch_live_prices_for_assets(db, update_fx=True)
+            prices.update(live_prices)
+        except Exception:
+            pass  # Fall back to DB price snapshots if external fetch fails
+    return fifo.compute_holdings(db, prices)
+
 
 
 @router.get("/realized-gains", response_model=list[schemas.RealizedGainOut])

@@ -21,6 +21,8 @@ export class DashboardComponent implements OnInit {
   totalValue = 0;
   totalCost = 0;
   totalUnrealized = 0;
+  isLoading = false;
+  lastRefreshed?: Date;
 
   allocationChart?: EChartsOption;
   holdingChart?: EChartsOption;
@@ -37,14 +39,29 @@ export class DashboardComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.reportService.getHoldings().subscribe((holdings) => {
-      this.holdings = holdings;
-      this.totalValue = holdings.reduce((sum, h) => sum + (h.market_value_base ?? 0), 0);
-      this.totalCost = holdings.reduce((sum, h) => sum + h.cost_basis_base, 0);
-      this.totalUnrealized = holdings.reduce((sum, h) => sum + (h.unrealized_gain_base ?? 0), 0);
-      this.buildCharts(holdings);
+    this.loadData();
+  }
+
+
+  loadData() {
+    this.isLoading = true;
+    this.reportService.getHoldings(true).subscribe({
+      next: (holdings) => {
+        this.holdings = holdings;
+        this.totalValue = holdings.reduce((sum, h) => sum + (h.market_value_base ?? h.cost_basis_base), 0);
+        this.totalCost = holdings.reduce((sum, h) => sum + h.cost_basis_base, 0);
+        this.totalUnrealized = holdings.reduce((sum, h) => sum + (h.unrealized_gain_base ?? 0), 0);
+        this.buildCharts(holdings);
+        this.lastRefreshed = new Date();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load live holdings market data', err);
+        this.isLoading = false;
+      },
     });
   }
+
 
   private buildCharts(holdings: Holding[]) {
     const byType = new Map<string, number>();

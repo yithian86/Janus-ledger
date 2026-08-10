@@ -30,4 +30,9 @@ export class PriceService {
   deleteFxRate(id: number): Observable<void> {
     return this.api.delete<void>(`/fx-rates/${id}`);
   }
+
+  fetchLatestMarketData(): Observable<{ prices: Record<number, number>; fx_rates: Record<string, number> }> {
+    return this.api.post<{ prices: Record<number, number>; fx_rates: Record<string, number> }>('/prices/fetch-latest', {});
+  }
 }
+

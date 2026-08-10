@@ -1,3 +1,18 @@
+.dashboard-header__infos {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.dashboard-header__fetch-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -8,11 +8,12 @@ import { ReportService } from '../../core/services/report.service';
 import { Holding } from '../../core/models/report.model';
 import { TableComponent, TableColumn, SortDirection } from '../../commons/components/table/table.component';
 import { SelectComponent, SelectOption } from '../../commons/components/select/select.component';
+import { ButtonComponent } from '../../commons/components/button/button.component';
 
 @Component({
   selector: 'pt-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxEchartsDirective, TableComponent, SelectComponent],
+  imports: [CommonModule, FormsModule, NgxEchartsDirective, TableComponent, SelectComponent, ButtonComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

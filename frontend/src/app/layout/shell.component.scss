@@ -86,6 +86,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+
+  .pt-sidebar--collapsed & {
+    gap: 0;
+  }
 }
 
 .pt-sidebar__link:hover {
@@ -98,7 +102,7 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  font-size: 1rem;
+  font-size: 24px;
 }
 
 .pt-sidebar__link-label {

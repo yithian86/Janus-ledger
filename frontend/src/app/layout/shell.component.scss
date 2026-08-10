@@ -12,6 +12,11 @@
   display: flex;
   flex-direction: column;
   padding: var(--space-lg) var(--space-sm);
+  transition: width var(--transition-fast);
+}
+
+.pt-sidebar--collapsed {
+  width: var(--sidebar-collapsed-width);
 }
 
 .pt-sidebar__brand {
@@ -21,15 +26,47 @@
   padding: 0 var(--space-sm) var(--space-xl) var(--space-sm);
 }
 
+.pt-sidebar__brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pt-sidebar--collapsed .pt-sidebar__brand-copy {
+  display: none;
+}
+
 .pt-sidebar__brand-mark {
   color: var(--color-sidebar-active);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .pt-sidebar__brand-name {
   font-family: var(--font-display);
   font-size: var(--text-lg);
   letter-spacing: 0.02em;
+}
+
+.pt-sidebar__brand-meta {
+  font-size: var(--text-xs);
+  color: var(--color-sidebar-ink-muted);
+}
+
+.pt-sidebar__toggle {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--color-sidebar-ink-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.pt-sidebar__toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-sidebar-ink);
 }
 
 .pt-sidebar__nav {
@@ -46,16 +83,44 @@
   font-size: var(--text-sm);
   font-weight: 500;
   transition: background var(--transition-fast), color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--color-sidebar-ink);
-  }
+.pt-sidebar__link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-sidebar-ink);
+}
+
+.pt-sidebar__link-icon {
+  width: 1.5rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.pt-sidebar__link-label {
+  white-space: nowrap;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.pt-sidebar--collapsed .pt-sidebar__link-label {
+  opacity: 0;
+  transform: translateX(-8px);
+  width: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .pt-sidebar__link--active {
   background: rgba(43, 110, 100, 0.25);
   color: var(--color-sidebar-ink);
+}
+
+.pt-sidebar--collapsed .pt-sidebar__link {
+  justify-content: center;
 }
 
 .pt-content {

@@ -8,4 +8,10 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
-export class ShellComponent {}
+export class ShellComponent {
+  isCollapsed = false;
+
+  toggleSidebar(): void {
+    this.isCollapsed = !this.isCollapsed;
+  }
+}

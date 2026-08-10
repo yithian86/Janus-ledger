@@ -43,9 +43,9 @@ export class DashboardComponent implements OnInit {
   }
 
 
-  loadData() {
+  loadData(forceFetch: boolean = false) {
     this.isLoading = true;
-    this.reportService.getHoldings(true).subscribe({
+    this.reportService.getHoldings(true, forceFetch).subscribe({
       next: (holdings) => {
         this.holdings = holdings;
         this.totalValue = holdings.reduce((sum, h) => sum + (h.market_value_base ?? h.cost_basis_base), 0);
@@ -61,6 +61,13 @@ export class DashboardComponent implements OnInit {
       },
     });
   }
+
+  refreshLivePrices() {
+    if (!this.isLoading) {
+      this.loadData(true);
+    }
+  }
+
 
 
   private buildCharts(holdings: Holding[]) {

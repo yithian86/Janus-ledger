@@ -1,14 +1,28 @@
-<h1>Dashboard</h1>
-<p class="text-muted">
-  Your portfolio at a glance, in EUR.
-  @if (isLoading) {
-    <span class="live-indicator--loading">
-      <span class="pulse-dot"></span> Fetching live market prices...
-    </span>
-  } @else if (lastRefreshed) {
-    <span class="live-indicator">• Live prices updated {{ lastRefreshed | date: 'shortTime' }}</span>
-  }
-</p>
+<div class="dashboard-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="text-muted">
+      Your portfolio at a glance, in EUR.
+      @if (isLoading) {
+        <span class="live-indicator--loading">
+          <span class="pulse-dot"></span> Fetching live market prices...
+        </span>
+      } @else if (lastRefreshed) {
+        <span class="live-indicator">• Live prices updated {{ lastRefreshed | date: 'shortTime' }}</span>
+      }
+    </p>
+  </div>
+  <button
+    class="refresh-btn"
+    [disabled]="isLoading"
+    (click)="refreshLivePrices()"
+    title="Fetch fresh live prices from Yahoo Finance"
+  >
+    <span class="refresh-icon" [class.refresh-icon--spin]="isLoading">↻</span>
+    Refresh prices
+  </button>
+</div>
+
 
 @if (isLoading) {
   <!-- Skeleton View: 3 tiles on top -->

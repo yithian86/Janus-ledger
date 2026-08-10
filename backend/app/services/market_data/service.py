@@ -1,11 +1,11 @@
 """
-High-level Market Data Service manager.
+High-level Market Data Service manager with in-memory TTL caching.
 
-Coordinates fetching prices and FX rates from the configured external provider
-and integrating them with the backend database and report services.
+Coordinates fetching prices and FX rates from the configured external provider,
+caching results to avoid repetitive API hits, and updating database tables.
 """
-from datetime import date
-from typing import Dict, List, Optional, Type
+from datetime import date, datetime
+from typing import Dict, List, Optional, Tuple, Type
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
@@ -16,6 +16,8 @@ from app.services.market_data.yahoo_provider import YahooMarketDataProvider
 # Active provider class can be configured or swapped here
 _ACTIVE_PROVIDER_CLASS: Type[BaseMarketDataProvider] = YahooMarketDataProvider
 
+CACHE_TTL_SECONDS = 900  # 15 minutes default cache TTL
+
 
 def get_market_data_provider() -> BaseMarketDataProvider:
     """Factory function returning an instance of the active market data provider."""
@@ -23,38 +25,61 @@ def get_market_data_provider() -> BaseMarketDataProvider:
 
 
 class MarketDataService:
-    def __init__(self, provider: Optional[BaseMarketDataProvider] = None):
+    def __init__(
+        self,
+        provider: Optional[BaseMarketDataProvider] = None,
+        ttl_seconds: int = CACHE_TTL_SECONDS,
+    ):
         self.provider = provider or get_market_data_provider()
+        self.ttl_seconds = ttl_seconds
+        # In-memory caches: id/currency -> (value, fetched_at_datetime)
+        self._price_cache: Dict[int, Tuple[float, datetime]] = {}
+        self._fx_cache: Dict[str, Tuple[float, datetime]] = {}
 
-    def sync_fx_rates_to_db(self, db: Session, currencies: list[str]) -> Dict[str, float]:
+    def clear_cache(self) -> None:
+        """Manually invalidate all cached prices and FX rates."""
+        self._price_cache.clear()
+        self._fx_cache.clear()
+
+    def sync_fx_rates_to_db(
+        self, db: Session, currencies: list[str], force_fetch: bool = False
+    ) -> Dict[str, float]:
         """
         Fetch current FX rates for given currencies to EUR base and update database FxRate entries for today.
+        Uses in-memory cache unless force_fetch is True or cache is expired.
         """
-        fx_rates = self.provider.fetch_fx_rates(currencies, base_currency="EUR")
-        today = date.today()
-        saved_rates: Dict[str, float] = {}
+        now = datetime.now()
+        missing_or_expired: List[str] = []
 
-        for currency, rate in fx_rates.items():
-            if rate is None or rate <= 0:
-                continue
+        if not force_fetch:
+            for curr in currencies:
+                cached = self._fx_cache.get(curr)
+                if not cached or (now - cached[1]).total_seconds() > self.ttl_seconds:
+                    missing_or_expired.append(curr)
+        else:
+            missing_or_expired = list(currencies)
 
-            saved_rates[currency] = rate
+        if missing_or_expired:
+            fx_rates = self.provider.fetch_fx_rates(missing_or_expired, base_currency="EUR")
+            today = date.today()
+            for currency, rate in fx_rates.items():
+                if rate is None or rate <= 0:
+                    continue
+                self._fx_cache[currency] = (rate, now)
+                existing = db.execute(
+                    select(models.FxRate).where(
+                        models.FxRate.currency == currency,
+                        models.FxRate.date == today,
+                    )
+                ).scalar_one_or_none()
 
-            # Upsert into FxRate for today's date
-            existing = db.execute(
-                select(models.FxRate).where(
-                    models.FxRate.currency == currency,
-                    models.FxRate.date == today,
-                )
-            ).scalar_one_or_none()
+                if existing:
+                    existing.rate_to_base = rate
+                else:
+                    db.add(models.FxRate(currency=currency, date=today, rate_to_base=rate))
+            db.commit()
 
-            if existing:
-                existing.rate_to_base = rate
-            else:
-                db.add(models.FxRate(currency=currency, date=today, rate_to_base=rate))
-
-        db.commit()
-        return saved_rates
+        return {curr: self._fx_cache[curr][0] for curr in currencies if curr in self._fx_cache}
 
     def _generate_candidate_tickers(self, asset: models.Asset) -> List[str]:
         ticker = (asset.ticker or "").strip()
@@ -89,11 +114,11 @@ class MarketDataService:
         return candidates
 
     def fetch_live_prices_for_assets(
-        self, db: Session, update_fx: bool = True
+        self, db: Session, update_fx: bool = True, force_fetch: bool = False
     ) -> Dict[int, float]:
         """
         Fetch current live prices for all non-archived assets from external provider.
-        Optionally updates current FX rates in the database.
+        Uses in-memory TTL cache unless force_fetch is True.
         Returns dict mapping asset_id -> live_price_native.
         """
         assets = db.execute(
@@ -103,18 +128,29 @@ class MarketDataService:
         if not assets:
             return {}
 
+        now = datetime.now()
         currencies = list({asset.currency for asset in assets if asset.currency})
 
         if update_fx and currencies:
-            self.sync_fx_rates_to_db(db, currencies)
+            self.sync_fx_rates_to_db(db, currencies, force_fetch=force_fetch)
 
         asset_prices: Dict[int, float] = {}
+        assets_to_fetch: List[models.Asset] = []
 
         for asset in assets:
             if asset.asset_type == models.AssetType.CASH:
                 asset_prices[asset.id] = 1.0
                 continue
 
+            if not force_fetch:
+                cached = self._price_cache.get(asset.id)
+                if cached and (now - cached[1]).total_seconds() <= self.ttl_seconds:
+                    asset_prices[asset.id] = cached[0]
+                    continue
+
+            assets_to_fetch.append(asset)
+
+        for asset in assets_to_fetch:
             candidates = self._generate_candidate_tickers(asset)
             if not candidates:
                 continue
@@ -124,6 +160,7 @@ class MarketDataService:
                 price = prices_by_ticker.get(cand)
                 if price is not None:
                     asset_prices[asset.id] = price
+                    self._price_cache[asset.id] = (price, now)
                     break
 
         return asset_prices

@@ -11,13 +11,16 @@ router = APIRouter(tags=["prices"])
 
 
 @router.post("/prices/fetch-latest", response_model=schemas.MarketDataSyncOut)
-def fetch_latest_market_data(db: Session = Depends(get_db)):
+def fetch_latest_market_data(force_fetch: bool = True, db: Session = Depends(get_db)):
     """Fetch live prices and exchange rates from external provider."""
-    live_prices = market_data_service.fetch_live_prices_for_assets(db, update_fx=True)
+    live_prices = market_data_service.fetch_live_prices_for_assets(
+        db, update_fx=True, force_fetch=force_fetch
+    )
     today = date.today()
     fx_rows = db.execute(select(models.FxRate).where(models.FxRate.date == today)).scalars().all()
     fx_dict = {row.currency: row.rate_to_base for row in fx_rows}
     return schemas.MarketDataSyncOut(prices=live_prices, fx_rates=fx_dict)
+
 
 
 

@@ -17,3 +17,19 @@
   gap: var(--space-xs);
   margin-top: var(--space-sm);
 }
+
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-md);
+}
+
+.table-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.table-filters > * {
+  min-width: 180px;
+}

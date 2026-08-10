@@ -10,6 +10,13 @@
   <p class="text-muted">Add at least one asset first, from the Assets page.</p>
 }
 
+<div class="table-toolbar">
+  <div class="table-filters" [formGroup]="filterForm">
+    <pt-select label="Type" formControlName="transaction_type" [options]="typeFilterOptions" placeholder="All types" />
+    <pt-select label="Asset" formControlName="asset_id" [options]="assetFilterOptions" placeholder="All assets" />
+  </div>
+</div>
+
 <pt-table
   [columns]="columns"
   [rows]="rows"

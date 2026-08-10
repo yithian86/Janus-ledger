@@ -62,7 +62,9 @@ export class TransactionsComponent implements OnInit {
   transactions: Transaction[] = [];
   rows: TransactionRow[] = [];
   assetOptions: SelectOption[] = [];
+  assetFilterOptions: SelectOption[] = [{ value: '', label: 'All assets' }];
   typeOptions = TRANSACTION_TYPE_OPTIONS;
+  typeFilterOptions: SelectOption[] = [{ value: '', label: 'All types' }, ...TRANSACTION_TYPE_OPTIONS];
   sortKey: string | null = 'date';
   sortDirection: 'asc' | 'desc' | null = 'desc';
 
@@ -93,6 +95,11 @@ export class TransactionsComponent implements OnInit {
     notes: [''],
   });
 
+  filterForm = this.fb.nonNullable.group({
+    transaction_type: ['' as TransactionType | ''],
+    asset_id: ['' as string],
+  });
+
   get showAsset() {
     return !['fee', 'stamp_duty'].includes(this.form.controls.transaction_type.value);
   }
@@ -111,6 +118,7 @@ export class TransactionsComponent implements OnInit {
     this.assetService.assets$.subscribe((assets) => {
       this.assets = assets;
       this.assetOptions = assets.map((a) => ({ value: a.id, label: `${a.ticker} — ${a.name}` }));
+      this.assetFilterOptions = [{ value: '', label: 'All assets' }, ...this.assetOptions];
       this.rebuildRows();
     });
 
@@ -121,18 +129,34 @@ export class TransactionsComponent implements OnInit {
     });
 
     this.form.controls.transaction_type.valueChanges.subscribe(() => this.updateAssetValidators());
+    this.filterForm.controls.transaction_type.valueChanges.subscribe(() => this.rebuildRows());
+    this.filterForm.controls.asset_id.valueChanges.subscribe(() => this.rebuildRows());
     this.updateAssetValidators();
   }
 
   private rebuildRows() {
     const assetById = new Map(this.assets.map((a) => [a.id, a]));
-    this.rows = this.transactions.map((t) => ({
-      ...t,
-      assetLabel:
-        t.asset_id != null
-          ? assetById.get(t.asset_id)?.name ?? `#${t.asset_id}`
-          : 'N/A',
-    }));
+    const typeFilter = this.filterForm.controls.transaction_type.value;
+    const assetFilter = this.filterForm.controls.asset_id.value;
+    const selectedAssetId = assetFilter === '' ? null : Number(assetFilter);
+
+    this.rows = this.transactions
+      .filter((t) => {
+        if (typeFilter && t.transaction_type !== typeFilter) {
+          return false;
+        }
+        if (selectedAssetId !== null && t.asset_id !== selectedAssetId) {
+          return false;
+        }
+        return true;
+      })
+      .map((t) => ({
+        ...t,
+        assetLabel:
+          t.asset_id != null
+            ? assetById.get(t.asset_id)?.name ?? `#${t.asset_id}`
+            : 'N/A',
+      }));
     this.applySort();
   }
 

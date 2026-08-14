@@ -27,6 +27,7 @@
   padding: var(--space-lg);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: var(--space-xs);
 }
 
@@ -121,12 +122,12 @@
 }
 
 .chart {
-  height: 280px;
+  height: 360px;
   width: 100%;
 }
 
 .chart-skeleton-body {
-  height: 280px;
+  height: 360px;
   width: 100%;
   display: flex;
   align-items: center;

@@ -51,7 +51,7 @@ interface TransactionRow extends Transaction {
     BadgeComponent,
   ],
   templateUrl: './transactions.component.html',
-  styleUrl: '../assets/assets.component.scss',
+  styleUrls: ['../assets/assets.component.scss', './transactions.component.scss'],
 })
 export class TransactionsComponent implements OnInit {
   private readonly assetService = inject(AssetService);
@@ -67,6 +67,10 @@ export class TransactionsComponent implements OnInit {
   typeFilterOptions: SelectOption[] = [{ value: '', label: 'All types' }, ...TRANSACTION_TYPE_OPTIONS];
   sortKey: string | null = 'date';
   sortDirection: 'asc' | 'desc' | null = 'desc';
+
+  /** Year tabs */
+  years: number[] = [];
+  activeYear: number | null = null;
 
   modalOpen = false;
   editingTxn: Transaction | null = null;
@@ -125,6 +129,7 @@ export class TransactionsComponent implements OnInit {
     this.transactionService.refresh().subscribe();
     this.transactionService.transactions$.subscribe((txns) => {
       this.transactions = txns;
+      this.rebuildYears();
       this.rebuildRows();
     });
 
@@ -132,6 +137,32 @@ export class TransactionsComponent implements OnInit {
     this.filterForm.controls.transaction_type.valueChanges.subscribe(() => this.rebuildRows());
     this.filterForm.controls.asset_id.valueChanges.subscribe(() => this.rebuildRows());
     this.updateAssetValidators();
+  }
+
+  /** Extract unique years from transactions and default to the most recent */
+  private rebuildYears() {
+    const yearSet = new Set<number>();
+    for (const t of this.transactions) {
+      if (t.date) {
+        const y = new Date(t.date).getFullYear();
+        if (!isNaN(y)) {
+          yearSet.add(y);
+        }
+      }
+    }
+    this.years = Array.from(yearSet).sort((a, b) => b - a); // descending: most recent first
+
+    // If no active year is set or the current one is no longer available, default to the most recent
+    if (this.years.length > 0 && (this.activeYear === null || !this.years.includes(this.activeYear))) {
+      this.activeYear = this.years[0];
+    } else if (this.years.length === 0) {
+      this.activeYear = null;
+    }
+  }
+
+  selectYear(year: number) {
+    this.activeYear = year;
+    this.rebuildRows();
   }
 
   private rebuildRows() {
@@ -142,6 +173,13 @@ export class TransactionsComponent implements OnInit {
 
     this.rows = this.transactions
       .filter((t) => {
+        // Year filter
+        if (this.activeYear !== null && t.date) {
+          const y = new Date(t.date).getFullYear();
+          if (y !== this.activeYear) {
+            return false;
+          }
+        }
         if (typeFilter && t.transaction_type !== typeFilter) {
           return false;
         }

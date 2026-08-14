@@ -10,32 +10,55 @@
   <p class="text-muted">Add at least one asset first, from the Assets page.</p>
 }
 
-<div class="table-toolbar">
-  <div class="table-filters" [formGroup]="filterForm">
-    <pt-select label="Type" formControlName="transaction_type" [options]="typeFilterOptions" placeholder="All types" />
-    <pt-select label="Asset" formControlName="asset_id" [options]="assetFilterOptions" placeholder="All assets" />
+
+<div class="page-content">
+
+  <div class="table-toolbar">
+    <div class="table-filters" [formGroup]="filterForm">
+      <pt-select label="Type" formControlName="transaction_type" [options]="typeFilterOptions" placeholder="All types" />
+      <pt-select label="Asset" formControlName="asset_id" [options]="assetFilterOptions" placeholder="All assets" />
+    </div>
+  </div>
+
+
+  <div class="tabs-wrapper">
+    <!-- YEAR TABS -->
+    @if (years.length > 0) {
+      <div class="tabs">
+        @for (year of years; track year) {
+          <button
+            class="tab"
+            [class.tab--active]="activeYear === year"
+            (click)="selectYear(year)"
+          >
+            {{ year }}
+          </button>
+        }
+      </div>
+    }
+
+    <!-- TABLE -->
+    <pt-table
+      [columns]="columns"
+      [rows]="rows"
+      [sortKey]="sortKey"
+      [sortDirection]="sortDirection"
+      emptyMessage="No transactions for this year."
+      (rowClick)="openEdit($event)"
+      (sortChange)="onSortChange($event)"
+    >
+      <ng-template let-row let-column="column">
+        @if (column.key === 'transaction_type') {
+          <pt-badge [tone]="badgeTone(row.transaction_type)">{{ typeLabel(row.transaction_type) }}</pt-badge>
+        } @else if (column.key === 'assetLabel') {
+          <strong>{{ row.assetLabel }}</strong>
+        } @else {
+          <span [class.num]="column.numeric">{{ getCellDisplayValue(row, column) }}</span>
+        }
+      </ng-template>
+    </pt-table>
   </div>
 </div>
-
-<pt-table
-  [columns]="columns"
-  [rows]="rows"
-  [sortKey]="sortKey"
-  [sortDirection]="sortDirection"
-  emptyMessage="No transactions yet."
-  (rowClick)="openEdit($event)"
-  (sortChange)="onSortChange($event)"
->
-  <ng-template let-row let-column="column">
-    @if (column.key === 'transaction_type') {
-      <pt-badge [tone]="badgeTone(row.transaction_type)">{{ typeLabel(row.transaction_type) }}</pt-badge>
-    } @else if (column.key === 'assetLabel') {
-      <strong>{{ row.assetLabel }}</strong>
-    } @else {
-      <span [class.num]="column.numeric">{{ getCellDisplayValue(row, column) }}</span>
-    }
-  </ng-template>
-</pt-table>
 
 <pt-modal [open]="modalOpen" [title]="editingTxn ? 'Edit transaction' : 'Add transaction'" [backdropClosable]="false" (close)="closeModal()">
   <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">

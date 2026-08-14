@@ -155,7 +155,7 @@ export class DashboardComponent implements OnInit {
       series: [
         {
           type: 'pie',
-          radius: ['45%', '75%'],
+          radius: ['0%', '95%'],
           itemStyle: { borderColor: '#F5F6F4', borderWidth: 2 },
           label: { 
             fontFamily: 'IBM Plex Mono, monospace',
@@ -178,7 +178,7 @@ export class DashboardComponent implements OnInit {
     const holdingChartData = holdings
       .filter((h) => !this.holdingChartAssetType || h.asset_type === this.holdingChartAssetType)
       .map((h, i) => ({
-        name: h.ticker,
+        name: h.name,
         value: Math.round((h.market_value_base ?? h.cost_basis_base) * 100) / 100,
         itemStyle: { color: palette[i % palette.length] },
       }));
@@ -196,14 +196,14 @@ export class DashboardComponent implements OnInit {
       series: [
         {
           type: 'pie',
-          radius: ['45%', '75%'],
+          radius: ['0%', '95%'],
           itemStyle: { borderColor: '#F5F6F4', borderWidth: 2 },
           label: { fontFamily: 'IBM Plex Mono, monospace', fontSize: 12 },
           data: holdingChartData,
           tooltip: {
             formatter: (params: any) => {
               const data = Array.isArray(params) ? params[0] : params;
-              const h = holdings.find((h) => h.ticker === data.name);
+              const h = holdings.find((h) => h.name === data.name);
               if (!h) return '';
               const value = h.market_value_base ?? h.cost_basis_base;
               const percent = Number(data.percent ?? 0).toFixed(1);

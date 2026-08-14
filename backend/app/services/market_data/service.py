@@ -16,7 +16,7 @@ from app.services.market_data.yahoo_provider import YahooMarketDataProvider
 # Active provider class can be configured or swapped here
 _ACTIVE_PROVIDER_CLASS: Type[BaseMarketDataProvider] = YahooMarketDataProvider
 
-CACHE_TTL_SECONDS = 900  # 15 minutes default cache TTL
+CACHE_TTL_SECONDS = 60*60  # 60 minutes default cache TTL
 
 
 def get_market_data_provider() -> BaseMarketDataProvider:

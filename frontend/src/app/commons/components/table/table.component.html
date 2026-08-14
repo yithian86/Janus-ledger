@@ -45,5 +45,18 @@
         </tr>
       }
     </tbody>
+    <tfoot *ngIf="footerRow">
+      <tr>
+        @for (col of columns; track col.key) {
+          <td [class.pt-table__td--numeric]="col.numeric">
+            @if (col.numeric) {
+              <span class="num">{{ footerRow[col.key] | number: '1.2-2' }}</span>
+            } @else {
+              <span>{{ footerRow[col.key] }}</span>
+            }
+          </td>
+        }
+      </tr>
+    </tfoot>
   </table>
 </div>

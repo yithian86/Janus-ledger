@@ -84,3 +84,27 @@ td {
   color: var(--color-ink-faint);
   font-style: italic;
 }
+
+/* Footer row styling to match table look and align with columns */
+tfoot {
+  background: var(--color-surface-sunken);
+}
+
+tfoot td {
+  padding: var(--space-sm) var(--space-md);
+  font-weight: 700;
+  color: var(--color-ink);
+  border-top: 1px solid var(--color-border);
+  text-transform: none;
+}
+
+/* Footer cells that are numeric keep right alignment via existing class */
+tfoot .pt-table__td--numeric {
+  text-align: right;
+}
+
+/* Footer row should not be interactive */
+.pt-table tfoot tr {
+  cursor: default;
+  background: transparent;
+}

@@ -36,6 +36,12 @@ export class ReportsComponent implements OnInit {
   cashFlow: CashFlowPeriod[] = [];
   income: IncomeByPeriod[] = [];
   realizedGains: RealizedGain[] = [];
+  realizedTotals = {
+    proceeds_base: 0,
+    cost_basis_base: 0,
+    fees_base: 0,
+    realized_gain_base: 0,
+  } as Record<string, number>;
   cashFlowChart?: EChartsOption;
 
   cashFlowColumns: TableColumn<CashFlowPeriod>[] = [
@@ -100,7 +106,28 @@ export class ReportsComponent implements OnInit {
     });
     this.reportService.getRealizedGains().subscribe((data) => {
       this.realizedGains = this.roundValues(data, ['proceeds_base', 'cost_basis_base', 'fees_base', 'realized_gain_base']);
+      this.computeRealizedTotals(this.realizedGains);
     });
+  }
+
+  private computeRealizedTotals(data: RealizedGain[]) {
+    const totals = data.reduce(
+      (acc, cur) => {
+        acc['proceeds_base'] += typeof cur.proceeds_base === 'number' ? cur.proceeds_base : 0;
+        acc['cost_basis_base'] += typeof cur.cost_basis_base === 'number' ? cur.cost_basis_base : 0;
+        acc['fees_base'] += typeof cur.fees_base === 'number' ? cur.fees_base : 0;
+        acc['realized_gain_base'] += typeof cur.realized_gain_base === 'number' ? cur.realized_gain_base : 0;
+        return acc;
+      },
+      { proceeds_base: 0, cost_basis_base: 0, fees_base: 0, realized_gain_base: 0 } as Record<string, number>
+    );
+
+    // Round to 2 decimals
+    Object.keys(totals).forEach((k) => {
+      totals[k] = Number(totals[k].toFixed(2));
+    });
+
+    this.realizedTotals = totals;
   }
 
   private roundValues<T extends object>(data: T[], keys: Array<keyof T>): T[] {

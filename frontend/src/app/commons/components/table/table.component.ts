@@ -23,6 +23,7 @@ export type SortDirection = 'asc' | 'desc' | null;
 export class TableComponent<T = any> {
   @Input() columns: TableColumn<T>[] = [];
   @Input() rows: T[] = [];
+  @Input() footerRow?: Partial<Record<string, any>>;
   @Input() emptyMessage = 'No records yet.';
   @Input() trackByFn?: (row: T) => unknown;
   @Input() sortKey: string | null = null;

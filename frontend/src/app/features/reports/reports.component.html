@@ -65,6 +65,7 @@
   <pt-table
     [columns]="realizedGainColumns"
     [rows]="realizedGains"
+    [footerRow]="{ year: 'Total', ticker: '', asset_name: '', proceeds_base: realizedTotals['proceeds_base'], cost_basis_base: realizedTotals['cost_basis_base'], fees_base: realizedTotals['fees_base'], realized_gain_base: realizedTotals['realized_gain_base'] }"
     emptyMessage="No realized gains yet — sells will show up here with FIFO cost basis applied."
   >
     <ng-template let-row let-column="column">

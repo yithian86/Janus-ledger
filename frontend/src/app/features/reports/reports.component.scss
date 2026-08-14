@@ -47,3 +47,62 @@
   height: 320px;
   width: 100%;
 }
+.realized-totals {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: calc(var(--space-sm) - 2px) var(--space-md);
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-body);
+
+  &__label {
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  &__values {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: center;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-muted);
+    font-weight: 600;
+  }
+}
+
+.realized-footer {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: calc(var(--space-xs) * -1);
+
+  tfoot {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  &__labels td {
+    padding: calc(var(--space-xs)) var(--space-md);
+    font-weight: 600;
+    color: var(--color-ink-muted);
+    border-top: 1px solid var(--color-border);
+  }
+
+  &__values td {
+    padding: calc(var(--space-xs)) var(--space-md);
+    font-weight: 700;
+    color: var(--color-ink);
+    text-align: right;
+    border-top: none;
+  }
+
+  .pt-table__td--numeric,
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}

@@ -31,6 +31,17 @@ pyenv activate .venv311
 pip install -r requirements.txt
 ```
 
+Option C — Windows environment
+```
+# Install Python 3.11 (one-time)
+
+# Create and activate a virtual environment
+python -m venv .venv311
+.venv311\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
 ## Run
 
 From the backend folder, use the launcher script:

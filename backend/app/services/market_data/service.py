@@ -13,7 +13,9 @@ from app import models
 from app.services.market_data.base import BaseMarketDataProvider
 from app.services.market_data.yahoo_provider import YahooMarketDataProvider
 
-# Active provider class can be configured or swapped here
+# Active provider class can be configured or swapped here.
+# The Yahoo provider is now implemented via direct HTTP requests rather than
+# the crashing yfinance library, so it is safe to keep as the default.
 _ACTIVE_PROVIDER_CLASS: Type[BaseMarketDataProvider] = YahooMarketDataProvider
 
 CACHE_TTL_SECONDS = 60*60  # 60 minutes default cache TTL

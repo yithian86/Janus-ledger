@@ -65,6 +65,42 @@ def test_market_data_service_mock_provider(db_session: Session):
     assert fx["EUR"] == 1.0
 
 
+def test_holdings_default_does_not_refresh_live_market_data(db_session: Session):
+    asset = Asset(ticker="AAPL", name="Apple Inc", asset_type="stock", currency="USD")
+    db_session.add(asset)
+    db_session.commit()
+    db_session.refresh(asset)
+
+    txn = Transaction(
+        asset_id=asset.id,
+        transaction_type=TransactionType.BUY,
+        date=date(2026, 1, 1),
+        quantity=10.0,
+        price=150.0,
+        amount=None,
+        fees=0.0,
+        currency="USD",
+    )
+    db_session.add(txn)
+    db_session.commit()
+
+    original = market_data_service.fetch_live_prices_for_assets
+    called = {"value": False}
+
+    def boom(*args, **kwargs):
+        called["value"] = True
+        raise AssertionError("live refresh should not run by default")
+
+    market_data_service.fetch_live_prices_for_assets = boom
+    try:
+        response = client.get("/reports/holdings")
+        assert response.status_code == 200
+        assert called["value"] is False
+        assert len(response.json()) == 1
+    finally:
+        market_data_service.fetch_live_prices_for_assets = original
+
+
 def test_holdings_with_market_data_integration(db_session: Session):
     # Inject dummy provider into market_data_service
     market_data_service.provider = DummyMarketDataProvider()

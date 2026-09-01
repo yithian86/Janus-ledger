@@ -34,7 +34,7 @@ def _latest_prices(db: Session) -> dict[int, float]:
 
 @router.get("/holdings", response_model=list[schemas.HoldingOut])
 def holdings(
-    refresh_market_data: bool = True,
+    refresh_market_data: bool = False,
     force_fetch: bool = False,
     db: Session = Depends(get_db),
 ):
@@ -42,9 +42,10 @@ def holdings(
     if refresh_market_data:
         try:
             live_prices = market_data_service.fetch_live_prices_for_assets(
-                db, update_fx=True, force_fetch=force_fetch
+                db, update_fx=False, force_fetch=force_fetch
             )
-            prices.update(live_prices)
+            if live_prices:
+                prices.update(live_prices)
         except Exception:
             pass  # Fall back to DB price snapshots if external fetch fails
     return fifo.compute_holdings(db, prices)

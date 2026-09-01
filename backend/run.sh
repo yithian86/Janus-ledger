@@ -19,9 +19,9 @@ backup_database() {
 
 choose_python() {
   local candidates=(
-    "$ROOT_DIR/.venv314/bin/python"
-    "$ROOT_DIR/.venv314/Scripts/python.exe"
-    "$ROOT_DIR/.venv314/Scripts/python"
+    "$ROOT_DIR/.venv312/bin/python"
+    "$ROOT_DIR/.venv312/Scripts/python.exe"
+    "$ROOT_DIR/.venv312/Scripts/python"
     "$ROOT_DIR/venv/bin/python"
     "$ROOT_DIR/venv/Scripts/python.exe"
     "$ROOT_DIR/.venv/bin/python"
@@ -36,18 +36,18 @@ choose_python() {
     fi
   done
 
-  if command -v python3.14 >/dev/null 2>&1; then
-    python3.14 -m venv "$ROOT_DIR/.venv314"
-    echo "$ROOT_DIR/.venv314/bin/python"
+  if command -v python3.12 >/dev/null 2>&1; then
+    python3.12 -m venv "$ROOT_DIR/.venv312"
+    echo "$ROOT_DIR/.venv312/bin/python"
     return 0
   elif command -v py >/dev/null 2>&1; then
-    py -3.14 -m venv "$ROOT_DIR/.venv314"
-    echo "$ROOT_DIR/.venv314/Scripts/python.exe"
+    py -3.12 -m venv "$ROOT_DIR/.venv312"
+    echo "$ROOT_DIR/.venv312/Scripts/python.exe"
     return 0
   elif command -v python >/dev/null 2>&1; then
     if python - <<'PY' >/dev/null 2>&1
 import sys
-raise SystemExit(0 if sys.version_info[:2] == (3, 14) else 1)
+raise SystemExit(0 if sys.version_info[:2] == (3, 12) else 1)
 PY
     then
       echo "$(command -v python)"
@@ -55,7 +55,7 @@ PY
     fi
   fi
 
-  echo "Python 3.14 was not found. Install it first." >&2
+  echo "Python 3.12 was not found. Install it first." >&2
   exit 1
 }
 

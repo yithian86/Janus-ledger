@@ -4,19 +4,19 @@ FastAPI + SQLite backend for the personal portfolio tracker.
 
 ## Setup
 
-Option A — system Python 3.11 (recommended on Ubuntu/Debian)
+Option A — system Python 3.12 (recommended on Ubuntu/Debian)
 
 ```bash
-# install Python 3.11 (one-time, requires sudo)
+# install Python 3.12 (one-time, requires sudo)
 sudo apt-get update
 sudo apt-get install -y software-properties-common
 sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt-get update
-sudo apt-get install -y python3.11 python3.11-venv python3.11-dev python3-pip
+sudo apt-get install -y python3.12 python3.12-venv python3.12-dev python3-pip
 
-# create and activate a 3.11 virtual environment
-python3.11 -m venv .venv311
-source .venv311/bin/activate
+# create and activate a 3.12 virtual environment
+python3.12 -m venv .venv312
+source .venv312/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
@@ -25,19 +25,19 @@ Option B — using `pyenv` (no sudo)
 
 ```bash
 # install pyenv per its docs, then:
-pyenv install 3.11.15
-pyenv virtualenv 3.11.15 .venv311
-pyenv activate .venv311
+pyenv install 3.12.9
+pyenv virtualenv 3.12.9 .venv312
+pyenv activate .venv312
 pip install -r requirements.txt
 ```
 
 Option C — Windows environment
 ```
-# Install Python 3.11 (one-time)
+# Install Python 3.12 (one-time)
 
 # Create and activate a virtual environment
-python -m venv .venv311
-.venv311\Scripts\Activate.ps1
+python -m venv .venv312
+.venv312\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```

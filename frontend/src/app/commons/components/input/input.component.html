@@ -15,10 +15,18 @@
       [step]="step"
       [placeholder]="placeholder"
       [disabled]="disabled"
+      [attr.list]="suggestions.length ? suggestionsId : null"
       [value]="value ?? ''"
       (input)="onInput($event)"
       (blur)="onTouched()"
     />
+    @if (suggestions.length) {
+      <datalist [id]="suggestionsId">
+        @for (suggestion of suggestions; track suggestion) {
+          <option [value]="suggestion"></option>
+        }
+      </datalist>
+    }
   </div>
   @if (error) {
     <span class="pt-field__error">{{ error }}</span>

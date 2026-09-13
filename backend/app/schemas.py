@@ -115,6 +115,72 @@ class TransactionOut(TransactionBase):
         return self
 
 
+# ---------- Expense ----------
+
+class ExpenseBase(BaseModel):
+    date: date_type
+    amount: float
+    currency: str = "EUR"
+    category: str
+    subcategory: Optional[str] = None
+    description: Optional[str] = None
+
+    @field_validator("amount")
+    @classmethod
+    def validate_amount(cls, value: float) -> float:
+        if value <= 0:
+            raise ValueError("Expense amount must be greater than zero")
+        return round(value, 2)
+
+
+class ExpenseCreate(ExpenseBase):
+    pass
+
+
+class ExpenseBatchCreate(BaseModel):
+    start_date: date_type
+    end_date: date_type
+    amount: float
+    currency: str = "EUR"
+    category: str
+    subcategory: Optional[str] = None
+    description: Optional[str] = None
+
+    @field_validator("amount")
+    @classmethod
+    def validate_amount(cls, value: float) -> float:
+        if value <= 0:
+            raise ValueError("Expense amount must be greater than zero")
+        return round(value, 2)
+
+    @model_validator(mode="after")
+    def validate_date_range(self):
+        if self.end_date < self.start_date:
+            raise ValueError("End date must be on or after start date")
+        return self
+
+
+class ExpenseUpdate(BaseModel):
+    date: Optional[date_type] = None
+    amount: Optional[float] = None
+    currency: Optional[str] = None
+    category: Optional[str] = None
+    subcategory: Optional[str] = None
+    description: Optional[str] = None
+
+    @field_validator("amount")
+    @classmethod
+    def validate_amount(cls, value: Optional[float]) -> Optional[float]:
+        if value is not None and value <= 0:
+            raise ValueError("Expense amount must be greater than zero")
+        return round(value, 2) if value is not None else None
+
+
+class ExpenseOut(ExpenseBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+
+
 # ---------- PriceSnapshot ----------
 
 class PriceSnapshotBase(BaseModel):
@@ -199,4 +265,3 @@ class IncomeByPeriodOut(BaseModel):
 class MarketDataSyncOut(BaseModel):
     prices: dict[int, float]
     fx_rates: dict[str, float]
-

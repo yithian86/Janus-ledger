@@ -90,6 +90,19 @@ class Transaction(Base):
     asset = relationship("Asset", back_populates="transactions")
 
 
+class Expense(Base):
+    """A personal expense, kept separate from investment transactions."""
+    __tablename__ = "expenses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, nullable=False, index=True)
+    amount = Column(Float, nullable=False)
+    currency = Column(String(3), nullable=False, default="EUR")
+    category = Column(String(40), nullable=False, index=True)
+    subcategory = Column(String(80), nullable=True)
+    description = Column(String(200), nullable=True)
+
+
 class PriceSnapshot(Base):
     """Manually entered valuation price for an asset at a point in time."""
     __tablename__ = "price_snapshots"

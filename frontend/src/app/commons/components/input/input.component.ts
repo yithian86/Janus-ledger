@@ -27,6 +27,7 @@ export class InputComponent implements ControlValueAccessor {
   /** Renders the value in the monospace tabular-number style used across the app. */
   @Input() numeric = false;
   @Input() step: string = 'any';
+  @Input() suggestions: string[] = [];
 
   value: string | number | null = null;
   disabled = false;
@@ -34,6 +35,10 @@ export class InputComponent implements ControlValueAccessor {
   private inputIdSuffix = ++nextId;
   get inputId() {
     return `pt-input-${this.inputIdSuffix}`;
+  }
+
+  get suggestionsId() {
+    return `${this.inputId}-suggestions`;
   }
 
   onChange: (value: string | number | null) => void = () => {};

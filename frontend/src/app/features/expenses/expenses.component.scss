@@ -1,0 +1,133 @@
+.form-help {
+  grid-column: 1 / -1;
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.entry-mode {
+  align-items: center;
+  display: flex;
+  gap: var(--space-md);
+  grid-column: 1 / -1;
+}
+
+.entry-mode__label {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+
+  pt-select {
+    min-width: 180px;
+  }
+}
+
+.period-tabs {
+  display: flex;
+  gap: var(--space-2xs);
+  background: var(--color-surface-sunken);
+  padding: var(--space-2xs);
+  border-radius: var(--radius-md);
+
+  button {
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    font-weight: 600;
+    padding: var(--space-xs) var(--space-md);
+  }
+
+  button.active {
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-accent-ink);
+  }
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+}
+
+.summary-card__label {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.summary-card__value {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.chart-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+.chart {
+  height: 300px;
+  width: 100%;
+}
+
+.table-header {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.table-header pt-select {
+  min-width: 220px;
+}
+
+.category-cell {
+  color: var(--color-accent-ink);
+  font-weight: 600;
+}
+
+.form-actions__spacer {
+  flex: 1;
+}
+
+@media (max-width: 800px) {
+  .controls,
+  .table-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .summary-cards,
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
-from app.routers import assets, transactions, prices, reports
+from app.routers import assets, transactions, prices, reports, expenses
 
 # Creates portfolio.db and all tables on first run if they don't exist yet.
 # For schema changes later, consider adding Alembic migrations rather than
@@ -24,6 +24,7 @@ app.include_router(assets.router)
 app.include_router(transactions.router)
 app.include_router(prices.router)
 app.include_router(reports.router)
+app.include_router(expenses.router)
 
 
 @app.get("/health")

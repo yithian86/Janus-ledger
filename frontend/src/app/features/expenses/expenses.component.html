@@ -1,0 +1,127 @@
+<div class="page-header">
+  <div>
+    <h1>Expenses</h1>
+    <p class="text-muted">Track household spending by category and see where your money goes.</p>
+  </div>
+  <pt-button (click)="openCreate()">+ Add expense</pt-button>
+</div>
+
+<div class="controls">
+  <div class="period-tabs" role="tablist" aria-label="Expense period">
+    <button type="button" [class.active]="viewMode === 'month'" (click)="setViewMode('month')">Monthly</button>
+    <button type="button" [class.active]="viewMode === 'year'" (click)="setViewMode('year')">Yearly</button>
+  </div>
+  <pt-select
+    label="Year"
+    [options]="yearOptions"
+    [(ngModel)]="selectedYear"
+    (ngModelChange)="applyFilters()"
+  />
+</div>
+
+<div class="summary-cards">
+  <div class="summary-card">
+    <span class="summary-card__label">Total tracked</span>
+    <span class="num summary-card__value">€{{ total | number: '1.2-2' }}</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-card__label">Average per {{ viewMode }}</span>
+    <span class="num summary-card__value">€{{ averagePeriod | number: '1.2-2' }}</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-card__label">Top category</span>
+    <span class="summary-card__value">{{ topCategory }}</span>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>{{ viewMode === 'month' ? 'Monthly' : 'Yearly' }} trend</h3>
+    @if (trendChart) {
+      <div echarts [options]="trendChart" class="chart"></div>
+    }
+  </div>
+  <div class="chart-card">
+    <h3>Spending by category</h3>
+    @if (categoryChart) {
+      <div echarts [options]="categoryChart" class="chart"></div>
+    }
+  </div>
+</div>
+
+<div class="table-header">
+  <h3>Expense ledger</h3>
+  <pt-select
+    label="Category"
+    [options]="categoryOptions"
+    [(ngModel)]="ledgerCategory"
+  />
+</div>
+<pt-table
+  [columns]="columns"
+  [rows]="ledgerExpenses"
+  [sortKey]="ledgerSortKey"
+  [sortDirection]="ledgerSortDirection"
+  emptyMessage="No expenses yet — add your first expense to start tracking."
+  (rowClick)="openEdit($event)"
+  (sortChange)="onLedgerSortChange($event)"
+>
+  <ng-template let-row let-column="column">
+    @if (column.key === 'category') {
+      <span class="category-cell">{{ categoryLabel(row.category) }}</span>
+    } @else if (column.key === 'amount') {
+      <span class="num">€{{ row.amount | number: '1.2-2' }}</span>
+    } @else {
+      <span [class.num]="column.numeric">{{ row[column.key] || '—' }}</span>
+    }
+  </ng-template>
+</pt-table>
+
+<pt-modal
+  [open]="modalOpen"
+  [title]="editingExpense ? 'Edit expense' : entryMode === 'monthly' ? 'Add monthly series' : 'Add expense'"
+  (close)="closeModal()"
+>
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+    @if (!editingExpense) {
+      <div class="entry-mode" role="group" aria-label="Expense entry type">
+        <span class="entry-mode__label">Entry type</span>
+        <div class="period-tabs">
+          <button type="button" [class.active]="entryMode === 'single'" (click)="setEntryMode('single')">
+            Single expense
+          </button>
+          <button type="button" [class.active]="entryMode === 'monthly'" (click)="setEntryMode('monthly')">
+            Monthly series
+          </button>
+        </div>
+      </div>
+    }
+    @if (entryMode === 'monthly' && !editingExpense) {
+      <div class="form-help">
+        One entry will be created for each month from the start date through the end date.
+      </div>
+      <pt-input label="Start date" type="date" formControlName="start_date" />
+      <pt-input label="End date" type="date" formControlName="end_date" />
+    } @else {
+      <pt-input label="Date" type="date" formControlName="date" />
+    }
+    <pt-input label="Amount" type="number" step="0.01" formControlName="amount" prefix="€" />
+    <pt-input label="Currency" formControlName="currency" />
+    <pt-select label="Category" formControlName="category" [options]="formCategoryOptions" />
+    <pt-input
+      label="Subcategory (optional)"
+      formControlName="subcategory"
+      placeholder="e.g. electricity, train"
+      [suggestions]="subcategorySuggestions"
+    />
+    <pt-input label="Description (optional)" formControlName="description" placeholder="What was this for?" />
+    <div class="form-actions">
+      @if (editingExpense) {
+        <pt-button type="button" variant="danger" (click)="deleteExpense()">Delete</pt-button>
+      }
+      <span class="form-actions__spacer"></span>
+      <pt-button type="button" variant="ghost" (click)="closeModal()">Cancel</pt-button>
+      <pt-button type="submit" [disabled]="form.invalid">Save</pt-button>
+    </div>
+  </form>
+</pt-modal>

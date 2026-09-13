@@ -36,13 +36,31 @@
 
 <div class="chart-grid">
   <div class="chart-card">
-    <h3>{{ viewMode === 'month' ? 'Monthly' : 'Yearly' }} trend</h3>
+    <div class="chart-card__header">
+      <h3>{{ viewMode === 'month' ? 'Monthly' : 'Yearly' }} trend</h3>
+      <button
+        type="button"
+        class="chart-card__expand"
+        (click)="openExpandedChart('trend')"
+        aria-label="Expand expense trend chart"
+        title="Expand chart"
+      >⛶</button>
+    </div>
     @if (trendChart) {
       <div echarts [options]="trendChart" class="chart"></div>
     }
   </div>
   <div class="chart-card">
-    <h3>Spending by category</h3>
+    <div class="chart-card__header">
+      <h3>Spending by category</h3>
+      <button
+        type="button"
+        class="chart-card__expand"
+        (click)="openExpandedChart('category')"
+        aria-label="Expand spending by category chart"
+        title="Expand chart"
+      >⛶</button>
+    </div>
     @if (categoryChart) {
       <div echarts [options]="categoryChart" class="chart"></div>
     }
@@ -152,3 +170,19 @@
     </div>
   </form>
 </pt-modal>
+
+@if (expandedChart) {
+  <div class="chart-fullscreen" role="dialog" aria-modal="true" [attr.aria-label]="expandedChart === 'trend' ? 'Expanded expense trend chart' : 'Expanded spending by category chart'">
+    <div class="chart-fullscreen__header">
+      <h2>{{ expandedChart === 'trend' ? (viewMode === 'month' ? 'Monthly' : 'Yearly') + ' trend' : 'Spending by category' }}</h2>
+      <button type="button" class="chart-fullscreen__close" (click)="closeExpandedChart()" aria-label="Close expanded chart">×</button>
+    </div>
+    <div class="chart-fullscreen__body">
+      @if (expandedChart === 'trend' && trendChart) {
+        <div echarts [options]="trendChart" class="chart chart--fullscreen"></div>
+      } @else if (expandedChart === 'category' && categoryChart) {
+        <div echarts [options]="categoryChart" class="chart chart--fullscreen"></div>
+      }
+    </div>
+  </div>
+}

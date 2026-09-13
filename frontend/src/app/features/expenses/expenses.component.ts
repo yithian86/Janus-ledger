@@ -55,6 +55,7 @@ export class ExpensesComponent implements OnInit {
   readonly subcategorySuggestions = ['Electricity', 'Gas', 'Water', 'Stamp Duty', 'Train', 'Mobile phone bill'];
   trendChart?: EChartsOption;
   categoryChart?: EChartsOption;
+  expandedChart: 'trend' | 'category' | null = null;
 
   readonly categoryOptions: SelectOption[] = [
     { value: '', label: 'All categories' },
@@ -159,6 +160,14 @@ export class ExpensesComponent implements OnInit {
   setViewMode(mode: ViewMode) {
     this.viewMode = mode;
     this.applyFilters();
+  }
+
+  openExpandedChart(chart: 'trend' | 'category') {
+    this.expandedChart = chart;
+  }
+
+  closeExpandedChart() {
+    this.expandedChart = null;
   }
 
   applyFilters() {

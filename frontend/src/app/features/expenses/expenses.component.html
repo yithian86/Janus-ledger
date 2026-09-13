@@ -51,11 +51,18 @@
 
 <div class="table-header">
   <h3>Expense ledger</h3>
-  <pt-select
-    label="Category"
-    [options]="categoryOptions"
-    [(ngModel)]="ledgerCategory"
-  />
+  <div class="table-header__filters">
+    <pt-input
+      label="Search"
+      placeholder="Search expenses..."
+      [(ngModel)]="ledgerSearch"
+    />
+    <pt-select
+      label="Category"
+      [options]="categoryOptions"
+      [(ngModel)]="ledgerCategory"
+    />
+  </div>
 </div>
 <pt-table
   [columns]="columns"

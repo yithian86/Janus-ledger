@@ -46,12 +46,13 @@ export class ExpensesComponent implements OnInit {
   viewMode: ViewMode = 'month';
   selectedYear = '';
   ledgerCategory = '';
+  ledgerSearch = '';
   ledgerSortKey: string | null = 'date';
   ledgerSortDirection: SortDirection = 'desc';
   modalOpen = false;
   editingExpense: Expense | null = null;
   entryMode: EntryMode = 'single';
-  readonly subcategorySuggestions = ['Electricity', 'Gas', 'Water', 'Stamp Duty', 'Train'];
+  readonly subcategorySuggestions = ['Electricity', 'Gas', 'Water', 'Stamp Duty', 'Train', 'Mobile phone bill'];
   trendChart?: EChartsOption;
   categoryChart?: EChartsOption;
 
@@ -112,9 +113,22 @@ export class ExpensesComponent implements OnInit {
   }
 
   get ledgerExpenses(): Expense[] {
-    const expenses = this.ledgerCategory
-      ? this.filteredExpenses.filter((expense) => expense.category === this.ledgerCategory)
-      : this.filteredExpenses;
+    const search = this.ledgerSearch.trim().toLocaleLowerCase();
+    const expenses = this.filteredExpenses.filter((expense) => {
+      const matchesCategory = !this.ledgerCategory || expense.category === this.ledgerCategory;
+      const searchableText = [
+        expense.date,
+        expense.category,
+        this.categoryLabel(expense.category),
+        expense.subcategory,
+        expense.description,
+        expense.currency,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLocaleLowerCase();
+      return matchesCategory && (!search || searchableText.includes(search));
+    });
     if (!this.ledgerSortKey || !this.ledgerSortDirection) return expenses;
 
     const direction = this.ledgerSortDirection === 'asc' ? 1 : -1;

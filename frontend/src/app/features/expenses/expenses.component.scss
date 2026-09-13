@@ -110,6 +110,16 @@
   min-width: 220px;
 }
 
+.table-header__filters {
+  align-items: flex-end;
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.table-header__filters pt-input {
+  min-width: 360px;
+}
+
 .category-cell {
   color: var(--color-accent-ink);
   font-weight: 600;

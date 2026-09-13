@@ -45,8 +45,8 @@ button {
 
 /* Visible keyboard focus everywhere — accessibility floor, non-negotiable */
 :focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
+  outline: none;
+  background-color: rgba(43, 110, 100, 0.10) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -174,4 +174,3 @@ button {
   align-items: center;
   margin-left: 8px;
 }
-

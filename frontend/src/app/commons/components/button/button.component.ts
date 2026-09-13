@@ -14,4 +14,5 @@ export class ButtonComponent {
   @Input() variant: ButtonVariant = 'primary';
   @Input() type: 'button' | 'submit' = 'button';
   @Input() disabled = false;
+  @Input() iconOnly = false;
 }

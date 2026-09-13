@@ -74,7 +74,28 @@
   (sortChange)="onLedgerSortChange($event)"
 >
   <ng-template let-row let-column="column">
-    @if (column.key === 'category') {
+    @if (column.key === 'actions') {
+      <div class="actions-wrapper">
+        <pt-button
+          variant="secondary"
+          [iconOnly]="true"
+          (click)="$event.stopPropagation(); duplicateExpense(row)"
+          aria-label="Duplicate expense"
+          title="Duplicate expense"
+        >
+          ⧉
+        </pt-button>
+        <pt-button
+          variant="danger"
+          [iconOnly]="true"
+          (click)="$event.stopPropagation(); deleteExpense(row)"
+          aria-label="Delete expense"
+          title="Delete expense"
+        >
+          ✕
+        </pt-button>
+      </div>
+    } @else if (column.key === 'category') {
       <span class="category-cell">{{ categoryLabel(row.category) }}</span>
     } @else if (column.key === 'amount') {
       <span class="num">€{{ row.amount | number: '1.2-2' }}</span>
@@ -89,7 +110,7 @@
   [title]="editingExpense ? 'Edit expense' : entryMode === 'monthly' ? 'Add monthly series' : 'Add expense'"
   (close)="closeModal()"
 >
-  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid expense-form">
     @if (!editingExpense) {
       <div class="entry-mode" role="group" aria-label="Expense entry type">
         <span class="entry-mode__label">Entry type</span>
@@ -126,7 +147,6 @@
       @if (editingExpense) {
         <pt-button type="button" variant="danger" (click)="deleteExpense()">Delete</pt-button>
       }
-      <span class="form-actions__spacer"></span>
       <pt-button type="button" variant="ghost" (click)="closeModal()">Cancel</pt-button>
       <pt-button type="submit" [disabled]="form.invalid">Save</pt-button>
     </div>

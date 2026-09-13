@@ -76,6 +76,7 @@ export class ExpensesComponent implements OnInit {
     { key: 'description', header: 'Description' },
     { key: 'amount', header: 'Amount', numeric: true, sortable: true },
     { key: 'currency', header: 'Currency', numeric: true },
+    { key: 'actions', header: 'ACTIONS' },
   ];
 
   form = this.fb.nonNullable.group({
@@ -207,6 +208,22 @@ export class ExpensesComponent implements OnInit {
     this.modalOpen = true;
   }
 
+  duplicateExpense(expense: Expense) {
+    this.editingExpense = null;
+    this.entryMode = 'single';
+    this.form.reset({
+      date: expense.date,
+      start_date: '',
+      end_date: '',
+      amount: expense.amount,
+      currency: expense.currency,
+      category: expense.category,
+      subcategory: expense.subcategory ?? '',
+      description: expense.description ?? '',
+    });
+    this.modalOpen = true;
+  }
+
   closeModal() {
     this.modalOpen = false;
   }
@@ -235,9 +252,12 @@ export class ExpensesComponent implements OnInit {
     request$.subscribe(() => this.closeModal());
   }
 
-  deleteExpense() {
-    if (!this.editingExpense) return;
-    this.expenseService.delete(this.editingExpense.id).subscribe(() => this.closeModal());
+  deleteExpense(expense?: Expense) {
+    const target = expense ?? this.editingExpense;
+    if (!target) return;
+    this.expenseService.delete(target.id).subscribe(() => {
+      if (this.editingExpense?.id === target.id) this.closeModal();
+    });
   }
 
   categoryLabel(category: string): string {

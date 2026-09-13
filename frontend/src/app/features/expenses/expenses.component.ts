@@ -55,6 +55,7 @@ export class ExpensesComponent implements OnInit {
   readonly subcategorySuggestions = ['Electricity', 'Gas', 'Water', 'Stamp Duty', 'Train', 'Mobile phone bill'];
   trendChart?: EChartsOption;
   categoryChart?: EChartsOption;
+  expandedCategoryChart?: EChartsOption;
   expandedChart: 'trend' | 'category' | null = null;
 
   readonly categoryOptions: SelectOption[] = [
@@ -307,16 +308,35 @@ export class ExpensesComponent implements OnInit {
       }],
     };
 
+    this.categoryChart = this.buildCategoryChart(false);
+    this.expandedCategoryChart = this.buildCategoryChart(true);
+  }
+
+  private buildCategoryChart(showPercent: boolean): EChartsOption {
     const categories = this.categoryTotals(this.filteredExpenses);
-    this.categoryChart = {
-      tooltip: { trigger: 'item', valueFormatter: (value) => `€${Number(value).toFixed(2)}` },
+    const palette = ['#2B6E64', '#7B8F87', '#C08A5A', '#8D6E97', '#B23B3B', '#3C7399'];
+    return {
+      tooltip: {
+        trigger: 'item',
+        formatter: (params: any) => {
+          const data = Array.isArray(params) ? params[0] : params;
+          return `<strong>${data.name}</strong>: €${Number(data.value).toFixed(2)} (${Number(data.percent ?? 0).toFixed(1)}%)`;
+        },
+      },
       textStyle: { fontFamily: 'Inter, sans-serif' },
       legend: { type: 'scroll', bottom: 0 },
       series: [{
         type: 'pie',
         radius: ['42%', '72%'],
         itemStyle: { borderColor: '#F5F6F4', borderWidth: 2 },
-        label: { formatter: '{b}' },
+        label: {
+          position: showPercent ? 'inside' : 'outside',
+          color: showPercent ? '#FFFFFF' : undefined,
+          fontWeight: showPercent ? 600 : undefined,
+          formatter: showPercent
+            ? (params: any) => `${params.name}\n${Number(params.percent ?? 0).toFixed(1)}%`
+            : '{b}',
+        },
         data: Object.entries(categories).map(([name, value], index) => ({
           name: this.categoryLabel(name),
           value: Number(value.toFixed(2)),

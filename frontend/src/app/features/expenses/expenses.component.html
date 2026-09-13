@@ -180,8 +180,8 @@
     <div class="chart-fullscreen__body">
       @if (expandedChart === 'trend' && trendChart) {
         <div echarts [options]="trendChart" class="chart chart--fullscreen"></div>
-      } @else if (expandedChart === 'category' && categoryChart) {
-        <div echarts [options]="categoryChart" class="chart chart--fullscreen"></div>
+      }       @else if (expandedChart === 'category' && expandedCategoryChart) {
+        <div echarts [options]="expandedCategoryChart" class="chart chart--fullscreen"></div>
       }
     </div>
   </div>

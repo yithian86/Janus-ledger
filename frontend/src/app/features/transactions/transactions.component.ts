@@ -84,6 +84,7 @@ export class TransactionsComponent implements OnInit {
     { key: 'fees', header: 'Fees', numeric: true },
     { key: 'amount', header: 'Amount', numeric: true },
     { key: 'currency', header: 'Ccy' },
+    { key: 'actions', header: 'Actions', sortable: false },
   ];
 
   form = this.fb.nonNullable.group({
@@ -318,5 +319,11 @@ export class TransactionsComponent implements OnInit {
       ? this.transactionService.update(this.editingTxn.id, payload)
       : this.transactionService.create(payload);
     request$.subscribe(() => this.closeModal());
+  }
+
+  deleteTransaction(id: number) {
+    if (confirm('Are you sure you want to delete this transaction?')) {
+      this.transactionService.delete(id).subscribe();
+    }
   }
 }

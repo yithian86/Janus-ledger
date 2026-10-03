@@ -52,6 +52,10 @@
           <pt-badge [tone]="badgeTone(row.transaction_type)">{{ typeLabel(row.transaction_type) }}</pt-badge>
         } @else if (column.key === 'assetLabel') {
           <strong>{{ row.assetLabel }}</strong>
+        } @else if (column.key === 'actions') {
+          <pt-button variant="danger" (click)="deleteTransaction(row.id); $event.stopPropagation()">
+            Delete
+          </pt-button>
         } @else {
           <span [class.num]="column.numeric">{{ getCellDisplayValue(row, column) }}</span>
         }

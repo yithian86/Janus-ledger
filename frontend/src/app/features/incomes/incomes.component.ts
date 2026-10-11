@@ -254,7 +254,7 @@ export class IncomesComponent implements OnInit {
     this.editingIncome = null;
     this.entryMode = 'single';
     this.form.reset({
-      date: new Date().toISOString().slice(0, 10),
+      date: income.date,
       start_date: '',
       end_date: '',
       amount: income.amount,

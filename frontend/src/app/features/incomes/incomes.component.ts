@@ -1,6 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NgxEchartsDirective } from 'ngx-echarts';
+import type { EChartsOption } from 'echarts';
 
 import { IncomeService } from '../../core/services/income.service';
 import { Income } from '../../core/models/income.model';
@@ -11,6 +13,7 @@ import { InputComponent } from '../../commons/components/input/input.component';
 import { SelectComponent, SelectOption } from '../../commons/components/select/select.component';
 
 type EntryMode = 'single' | 'monthly';
+type ChartViewMode = 'month' | 'year' | 'compare';
 
 @Component({
   selector: 'pt-incomes',
@@ -19,6 +22,7 @@ type EntryMode = 'single' | 'monthly';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxEchartsDirective,
     TableComponent,
     ButtonComponent,
     ModalComponent,
@@ -39,9 +43,11 @@ export class IncomesComponent implements OnInit {
   ledgerSearch = '';
   ledgerSortKey: string | null = 'date';
   ledgerSortDirection: SortDirection = 'desc';
+  viewMode: ChartViewMode = 'month';
   modalOpen = false;
   editingIncome: Income | null = null;
   entryMode: EntryMode = 'single';
+  incomeChart: EChartsOption = {};
 
   readonly sourceSuggestions = ['Salary', 'Freelance', 'Online shop', 'T-shirt sales', 'Dividends', 'Other'];
   readonly columns: TableColumn<Income>[] = [
@@ -151,6 +157,67 @@ export class IncomesComponent implements OnInit {
     this.filteredIncomes = this.incomes.filter((income) =>
       !this.selectedYear || income.date.startsWith(this.selectedYear)
     );
+    this.buildIncomeChart();
+  }
+
+  setViewMode(mode: ChartViewMode) {
+    this.viewMode = mode;
+    this.buildIncomeChart();
+  }
+
+  private buildIncomeChart() {
+    const chartIncomes = this.viewMode === 'compare' ? this.incomes : this.filteredIncomes;
+    const periods = this.viewMode === 'compare'
+      ? Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, '0'))
+      : [...new Set(chartIncomes.map((income) =>
+        this.viewMode === 'year' ? income.date.slice(0, 4) : income.date.slice(0, 7)
+      ))].sort();
+    const currencies = [...new Set(chartIncomes.map((income) => income.currency))].sort();
+    const series = this.viewMode === 'compare'
+      ? [...new Map(chartIncomes.map((income) => {
+        const year = income.date.slice(0, 4);
+        const key = `${year}:${income.currency}`;
+        return [key, { key, name: `${year}` }] as const;
+      })).values()]
+      : currencies.map((currency) => ({ key: currency, name: currency }));
+    const totals = chartIncomes.reduce<Record<string, number>>((result, income) => {
+      const period = this.viewMode === 'compare'
+        ? income.date.slice(5, 7)
+        : this.viewMode === 'year' ? income.date.slice(0, 4) : income.date.slice(0, 7);
+      const seriesKey = this.viewMode === 'compare'
+        ? `${income.date.slice(0, 4)}:${income.currency}`
+        : income.currency;
+      const key = `${seriesKey}:${period}`;
+      result[key] = (result[key] ?? 0) + income.amount;
+      return result;
+    }, {});
+    const palette = ['#2E7D4F', '#3C7399', '#C08A5A', '#8D6E97', '#B23B3B', '#2B6E64'];
+
+    this.incomeChart = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        valueFormatter: (value) => Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      },
+      legend: { show: this.viewMode === 'compare', bottom: 0 },
+      textStyle: { fontFamily: 'Inter, sans-serif' },
+      grid: { left: 64, right: 24, top: 24, bottom: 56 },
+      xAxis: {
+        type: 'category',
+        data: this.viewMode === 'compare'
+          ? periods.map((period) => new Date(2000, Number(period) - 1).toLocaleString(undefined, { month: 'short' }))
+          : periods,
+        axisLabel: { hideOverlap: true },
+      },
+      yAxis: { type: 'value', axisLabel: { formatter: '{value}' } },
+      series: series.map((item, index) => ({
+        name: item.name,
+        type: 'bar',
+        data: periods.map((period) => Number((totals[`${item.key}:${period}`] ?? 0).toFixed(2))),
+        itemStyle: { color: palette[index % palette.length], borderRadius: [3, 3, 0, 0] },
+        barMaxWidth: 36,
+      })),
+    };
   }
 
   openCreate() {

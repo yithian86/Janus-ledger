@@ -44,6 +44,33 @@
   </div>
 </div>
 
+<section class="chart-card" aria-labelledby="income-chart-title">
+  <div class="chart-card__header">
+    <div>
+      <h3 id="income-chart-title">
+        {{ viewMode === 'compare' ? 'Monthly comparison across years' : 'Income by ' + (viewMode === 'month' ? 'month' : 'year') }}
+      </h3>
+      <p class="text-muted chart-caption">
+        @if (viewMode === 'compare') {
+          All years are included; each series represents one year and currency.
+        } @else {
+          Amounts are grouped by currency and are not converted or combined.
+        }
+      </p>
+    </div>
+    <div class="period-tabs" role="tablist" aria-label="Income chart period">
+      <button type="button" [class.active]="viewMode === 'month'" (click)="setViewMode('month')">Monthly</button>
+      <button type="button" [class.active]="viewMode === 'year'" (click)="setViewMode('year')">Yearly</button>
+      <button type="button" [class.active]="viewMode === 'compare'" (click)="setViewMode('compare')">Compare months</button>
+    </div>
+  </div>
+  @if (viewMode === 'compare' ? incomes.length : filteredIncomes.length) {
+    <div echarts [options]="incomeChart" class="chart"></div>
+  } @else {
+    <div class="chart-empty">Add income entries to see your monthly and yearly trend.</div>
+  }
+</section>
+
 <div class="table-header">
   <div>
     <h3>Income ledger</h3>

@@ -75,6 +75,13 @@
   gap: 2px;
 }
 
+.pt-sidebar__separator {
+  width: calc(100% - var(--space-md));
+  margin: var(--space-sm) auto;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
 .pt-sidebar__link {
   color: var(--color-sidebar-ink-muted);
   text-decoration: none;

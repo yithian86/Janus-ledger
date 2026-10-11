@@ -21,14 +21,14 @@
 
 <div class="summary-cards">
   <div class="summary-card">
-    <span class="summary-card__label">Entries recorded</span>
-    <span class="num summary-card__value">{{ filteredIncomes.length }}</span>
+    <span class="summary-card__label">Rows displayed</span>
+    <span class="num summary-card__value">{{ ledgerIncomes.length }}</span>
     <span class="summary-card__detail">{{ selectedYear || 'Across all years' }}</span>
   </div>
   <div class="summary-card">
     <span class="summary-card__label">Income sources</span>
-    <span class="num summary-card__value">{{ incomeSourceCount }}</span>
-    <span class="summary-card__detail">Distinct sources in this view</span>
+    <span class="num summary-card__value">{{ displayedIncomeSourceCount }}</span>
+    <span class="summary-card__detail">In the displayed rows</span>
   </div>
   <div class="summary-card summary-card--totals">
     <span class="summary-card__label">Total by currency</span>
@@ -39,7 +39,7 @@
         }
       </div>
     } @else {
-      <span class="summary-card__detail">Add an income to see totals</span>
+      <span class="summary-card__detail">No displayed rows to total</span>
     }
   </div>
 </div>
@@ -57,9 +57,10 @@
 <pt-table
   [columns]="columns"
   [rows]="ledgerIncomes"
+  [footerRows]="ledgerFooterRows"
   [sortKey]="ledgerSortKey"
   [sortDirection]="ledgerSortDirection"
-  emptyMessage="No income entries yet — add your first source to start tracking."
+  emptyMessage="No matching income entries — adjust the filters or add an income source."
   (rowClick)="openEdit($event)"
   (sortChange)="onLedgerSortChange($event)"
 >
@@ -93,6 +94,7 @@
 
 <pt-modal
   [open]="modalOpen"
+  [backdropClosable]="false"
   [title]="editingIncome ? 'Edit income' : entryMode === 'monthly' ? 'Add monthly income' : 'Add income'"
   (close)="closeModal()"
 >

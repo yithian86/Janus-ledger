@@ -68,8 +68,8 @@ export class IncomesComponent implements OnInit {
     return [{ value: '', label: 'All years' }, ...years.map((year) => ({ value: year, label: year }))];
   }
 
-  get incomeSourceCount(): number {
-    return new Set(this.filteredIncomes.map((income) => income.source)).size;
+  get displayedIncomeSourceCount(): number {
+    return new Set(this.ledgerIncomes.map((income) => income.source)).size;
   }
 
   get incomeSources(): SelectOption[] {
@@ -78,7 +78,23 @@ export class IncomesComponent implements OnInit {
   }
 
   get currencyTotals(): { currency: string; amount: number }[] {
-    const totals = this.filteredIncomes.reduce<Record<string, number>>((result, income) => {
+    return this.totalsByCurrency(this.filteredIncomes);
+  }
+
+  get ledgerCurrencyTotals(): { currency: string; amount: number }[] {
+    return this.totalsByCurrency(this.ledgerIncomes);
+  }
+
+  get ledgerFooterRows(): Partial<Record<string, string | number>>[] {
+    return this.ledgerCurrencyTotals.map((total, index) => ({
+      source: index === 0 ? 'Displayed total' : '',
+      amount: total.amount,
+      currency: total.currency,
+    }));
+  }
+
+  private totalsByCurrency(incomes: Income[]): { currency: string; amount: number }[] {
+    const totals = incomes.reduce<Record<string, number>>((result, income) => {
       result[income.currency] = (result[income.currency] ?? 0) + income.amount;
       return result;
     }, {});

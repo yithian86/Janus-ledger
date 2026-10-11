@@ -24,6 +24,7 @@ export class TableComponent<T = any> {
   @Input() columns: TableColumn<T>[] = [];
   @Input() rows: T[] = [];
   @Input() footerRow?: Partial<Record<string, any>>;
+  @Input() footerRows: Partial<Record<string, any>>[] = [];
   @Input() emptyMessage = 'No records yet.';
   @Input() trackByFn?: (row: T) => unknown;
   @Input() sortKey: string | null = null;
@@ -33,6 +34,14 @@ export class TableComponent<T = any> {
   @Output() sortChange = new EventEmitter<{ key: string; direction: SortDirection }>();
 
   @ContentChild(TemplateRef) cellTemplate?: TemplateRef<unknown>;
+
+  get footerRowsToRender(): Partial<Record<string, any>>[] {
+    return this.footerRows.length ? this.footerRows : this.footerRow ? [this.footerRow] : [];
+  }
+
+  isNumeric(value: unknown): value is number {
+    return typeof value === 'number' && Number.isFinite(value);
+  }
 
   onSort(key: string) {
     let direction: SortDirection = 'asc';

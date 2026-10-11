@@ -341,7 +341,7 @@ class CashFlowPeriodOut(BaseModel):
     period: str  # "2026-01" or "2026"
     invested_base: float     # buys
     divested_base: float     # sells (proceeds)
-    income_base: float       # dividends + coupons
+    income_base: float       # income entries, dividends, and coupons
     fees_base: float
     deposits_base: float
     withdrawals_base: float
@@ -350,8 +350,10 @@ class CashFlowPeriodOut(BaseModel):
 
 class IncomeByPeriodOut(BaseModel):
     period: str
-    asset_id: int
-    ticker: str
+    asset_id: Optional[int] = None
+    ticker: Optional[str] = None
+    source: Optional[str] = None
+    income_type: str
     income_base: float
 
 

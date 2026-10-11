@@ -44,16 +44,35 @@
     </ng-template>
   </pt-table>
 } @else if (activeTab === 'income') {
-  <pt-table [columns]="incomeColumns" [rows]="income" emptyMessage="No dividend or coupon income recorded yet.">
+  <div class="income-filters" aria-label="Filter income report">
+    <pt-select
+      label="Income type"
+      [options]="incomeTypeOptions"
+      [(ngModel)]="incomeTypeFilter"
+    />
+    <pt-select
+      label="Source / asset"
+      [options]="incomeSourceAssetOptions"
+      [(ngModel)]="incomeSourceAssetFilter"
+    />
+    <pt-select
+      label="Year"
+      [options]="incomeYearOptions"
+      [(ngModel)]="incomeYearFilter"
+    />
+  </div>
+  <pt-table [columns]="incomeColumns" [rows]="filteredIncome" [emptyMessage]="incomeEmptyMessage">
     <ng-template let-row let-column="column">
       @if (column.key === 'income_base') {
         <span [class.num]="column.numeric">
           {{ column.accessor ? column.accessor(row) : (column.numeric ? (row[column.key] | number: '1.2-2') : row[column.key]) }}
         </span>
-      } @else if (column.key === 'asset_name') {
+      } @else if (column.key === 'source') {
         <span>
-          {{ getAsset(row['ticker']) }}
+          {{ getIncomeSourceLabel(row) }}
         </span>
+      } @else if (column.key === 'income_type') {
+        <span>{{ getIncomeTypeLabel(row.income_type) }}</span>
       } @else{
         <span>
           {{ row[column.key]}}

@@ -38,8 +38,10 @@ export interface CashFlowPeriod {
 
 export interface IncomeByPeriod {
   period: string;
-  asset_id: number;
-  ticker: string;
+  asset_id: number | null;
+  ticker: string | null;
+  source: string | null;
+  income_type: 'income' | 'dividend' | 'coupon';
   income_base: number;
 }
 

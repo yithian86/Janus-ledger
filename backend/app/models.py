@@ -103,6 +103,18 @@ class Expense(Base):
     description = Column(String(200), nullable=True)
 
 
+class Income(Base):
+    """A personal income entry, kept separate from investment transactions."""
+    __tablename__ = "incomes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, nullable=False, index=True)
+    amount = Column(Float, nullable=False)
+    currency = Column(String(3), nullable=False, default="EUR")
+    source = Column(String(100), nullable=False, index=True)
+    description = Column(String(200), nullable=True)
+
+
 class PriceSnapshot(Base):
     """Manually entered valuation price for an asset at a point in time."""
     __tablename__ = "price_snapshots"

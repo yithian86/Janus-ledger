@@ -181,6 +181,101 @@ class ExpenseOut(ExpenseBase):
     id: int
 
 
+# ---------- Income ----------
+
+class IncomeBase(BaseModel):
+    date: date_type
+    amount: float
+    currency: str = "EUR"
+    source: str
+    description: Optional[str] = None
+
+    @field_validator("amount")
+    @classmethod
+    def validate_amount(cls, value: float) -> float:
+        if value <= 0:
+            raise ValueError("Income amount must be greater than zero")
+        return round(value, 2)
+
+    @field_validator("source")
+    @classmethod
+    def validate_source(cls, value: str) -> str:
+        source = value.strip()
+        if not source:
+            raise ValueError("Income source must not be empty")
+        if len(source) > 100:
+            raise ValueError("Income source must be at most 100 characters")
+        return source
+
+
+class IncomeCreate(IncomeBase):
+    pass
+
+
+class IncomeBatchCreate(BaseModel):
+    start_date: date_type
+    end_date: date_type
+    amount: float
+    currency: str = "EUR"
+    source: str
+    description: Optional[str] = None
+
+    @field_validator("amount")
+    @classmethod
+    def validate_amount(cls, value: float) -> float:
+        if value <= 0:
+            raise ValueError("Income amount must be greater than zero")
+        return round(value, 2)
+
+    @field_validator("source")
+    @classmethod
+    def validate_source(cls, value: str) -> str:
+        source = value.strip()
+        if not source:
+            raise ValueError("Income source must not be empty")
+        if len(source) > 100:
+            raise ValueError("Income source must be at most 100 characters")
+        return source
+
+    @model_validator(mode="after")
+    def validate_date_range(self):
+        if self.end_date < self.start_date:
+            raise ValueError("End date must be on or after start date")
+        return self
+
+
+class IncomeUpdate(BaseModel):
+    date: Optional[date_type] = None
+    amount: Optional[float] = None
+    currency: Optional[str] = None
+    source: Optional[str] = None
+    description: Optional[str] = None
+
+    @field_validator("amount")
+    @classmethod
+    def validate_amount(cls, value: Optional[float]) -> Optional[float]:
+        if value is not None and value <= 0:
+            raise ValueError("Income amount must be greater than zero")
+        return round(value, 2) if value is not None else None
+
+    @field_validator("source")
+    @classmethod
+    def validate_source(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        source = value.strip()
+        if not source:
+            raise ValueError("Income source must not be empty")
+        if len(source) > 100:
+            raise ValueError("Income source must be at most 100 characters")
+        return source
+
+
+class IncomeOut(IncomeBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+
+
 # ---------- PriceSnapshot ----------
 
 class PriceSnapshotBase(BaseModel):

@@ -1,0 +1,140 @@
+<div class="page-header">
+  <div>
+    <h1>Income</h1>
+    <p class="text-muted">Keep track of every paycheck, side project, and other source of income.</p>
+  </div>
+  <pt-button (click)="openCreate()">+ Add income</pt-button>
+</div>
+
+<div class="controls">
+  <div class="period-label">
+    <span class="period-label__mark" aria-hidden="true">↗</span>
+    <span>Income ledger</span>
+  </div>
+  <pt-select
+    label="Year"
+    [options]="yearOptions"
+    [(ngModel)]="selectedYear"
+    (ngModelChange)="applyFilters()"
+  />
+</div>
+
+<div class="summary-cards">
+  <div class="summary-card">
+    <span class="summary-card__label">Entries recorded</span>
+    <span class="num summary-card__value">{{ filteredIncomes.length }}</span>
+    <span class="summary-card__detail">{{ selectedYear || 'Across all years' }}</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-card__label">Income sources</span>
+    <span class="num summary-card__value">{{ incomeSourceCount }}</span>
+    <span class="summary-card__detail">Distinct sources in this view</span>
+  </div>
+  <div class="summary-card summary-card--totals">
+    <span class="summary-card__label">Total by currency</span>
+    @if (currencyTotals.length) {
+      <div class="currency-totals">
+        @for (total of currencyTotals; track total.currency) {
+          <span class="num currency-total">{{ total.amount | number: '1.2-2' }} <small>{{ total.currency }}</small></span>
+        }
+      </div>
+    } @else {
+      <span class="summary-card__detail">Add an income to see totals</span>
+    }
+  </div>
+</div>
+
+<div class="table-header">
+  <div>
+    <h3>Income ledger</h3>
+    <p class="text-muted table-caption">Select an entry to edit it. Currency totals stay separate.</p>
+  </div>
+  <div class="table-header__filters">
+    <pt-input label="Search" placeholder="Search income..." [(ngModel)]="ledgerSearch" />
+    <pt-select label="Source" [options]="incomeSources" [(ngModel)]="ledgerSource" />
+  </div>
+</div>
+<pt-table
+  [columns]="columns"
+  [rows]="ledgerIncomes"
+  [sortKey]="ledgerSortKey"
+  [sortDirection]="ledgerSortDirection"
+  emptyMessage="No income entries yet — add your first source to start tracking."
+  (rowClick)="openEdit($event)"
+  (sortChange)="onLedgerSortChange($event)"
+>
+  <ng-template let-row let-column="column">
+    @if (column.key === 'actions') {
+      <div class="actions-wrapper">
+        <pt-button
+          variant="secondary"
+          [iconOnly]="true"
+          (click)="$event.stopPropagation(); duplicateIncome(row)"
+          aria-label="Duplicate income"
+          title="Duplicate income"
+        >⧉</pt-button>
+        <pt-button
+          variant="danger"
+          [iconOnly]="true"
+          (click)="$event.stopPropagation(); deleteIncome(row)"
+          aria-label="Delete income"
+          title="Delete income"
+        >✕</pt-button>
+      </div>
+    } @else if (column.key === 'source') {
+      <span class="source-cell">{{ row.source }}</span>
+    } @else if (column.key === 'amount') {
+      <span class="num amount-cell">{{ row.amount | number: '1.2-2' }}</span>
+    } @else {
+      <span [class.num]="column.numeric">{{ row[column.key] || '—' }}</span>
+    }
+  </ng-template>
+</pt-table>
+
+<pt-modal
+  [open]="modalOpen"
+  [title]="editingIncome ? 'Edit income' : entryMode === 'monthly' ? 'Add monthly income' : 'Add income'"
+  (close)="closeModal()"
+>
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid income-form">
+    @if (!editingIncome) {
+      <div class="entry-mode">
+        <span class="entry-mode__label">Entry type</span>
+        <div class="period-tabs" role="group" aria-label="Income entry type">
+          <button type="button" [class.active]="entryMode === 'single'" (click)="setEntryMode('single')">
+            One-time
+          </button>
+          <button type="button" [class.active]="entryMode === 'monthly'" (click)="setEntryMode('monthly')">
+            Monthly series
+          </button>
+        </div>
+      </div>
+    }
+    @if (entryMode === 'monthly' && !editingIncome) {
+      <div class="form-help">Add one entry each month between these dates, useful for a regular salary or retainer.</div>
+      <pt-input label="Start date" type="date" formControlName="start_date" />
+      <pt-input label="End date" type="date" formControlName="end_date" />
+    } @else {
+      <pt-input label="Date received" type="date" formControlName="date" />
+    }
+    <pt-input label="Amount" type="number" step="0.01" formControlName="amount" />
+    <pt-input label="Currency" formControlName="currency" />
+    <pt-input
+      label="Source"
+      formControlName="source"
+      placeholder="e.g. Salary, T-shirt shop"
+      [suggestions]="sourceSuggestions"
+    />
+    <pt-input label="Description (optional)" formControlName="description" placeholder="Add a note about this income" />
+    <div class="form-actions">
+      @if (editingIncome) {
+        <pt-button type="button" variant="danger" (click)="deleteIncome()">Delete</pt-button>
+      }
+      <pt-button type="button" variant="ghost" (click)="closeModal()">Cancel</pt-button>
+      <pt-button
+        type="submit"
+        [disabled]="form.invalid || (entryMode === 'monthly' && (!form.value.start_date || !form.value.end_date || form.value.end_date < form.value.start_date))"
+      >Save</pt-button>
+    </div>
+  </form>
+</pt-modal>

@@ -61,7 +61,12 @@
       [(ngModel)]="incomeYearFilter"
     />
   </div>
-  <pt-table [columns]="incomeColumns" [rows]="filteredIncome" [emptyMessage]="incomeEmptyMessage">
+  <pt-table
+    [columns]="incomeColumns"
+    [rows]="filteredIncome"
+    [footerRow]="incomeFooterRow"
+    [emptyMessage]="incomeEmptyMessage"
+  >
     <ng-template let-row let-column="column">
       @if (column.key === 'income_base') {
         <span [class.num]="column.numeric">

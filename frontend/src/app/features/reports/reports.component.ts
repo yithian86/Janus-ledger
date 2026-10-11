@@ -116,6 +116,16 @@ export class ReportsComponent implements OnInit {
     });
   }
 
+  get incomeFooterRow(): Partial<Record<string, string | number>> {
+    const total = this.filteredIncome.reduce((sum, row) => sum + row.income_base, 0);
+    return {
+      period: 'Displayed total',
+      income_type: '',
+      source: '',
+      income_base: Number(total.toFixed(2)),
+    };
+  }
+
   get incomeEmptyMessage(): string {
     return this.income.length
       ? 'No income rows match these filters.'

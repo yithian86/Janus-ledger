@@ -126,6 +126,7 @@
 <pt-modal
   [open]="modalOpen"
   [title]="editingExpense ? 'Edit expense' : entryMode === 'monthly' ? 'Add monthly series' : 'Add expense'"
+  [backdropClosable]="false"
   (close)="closeModal()"
 >
   <form [formGroup]="form" (ngSubmit)="save()" class="form-grid expense-form">

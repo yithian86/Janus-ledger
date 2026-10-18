@@ -104,7 +104,7 @@
         <pt-button
           variant="danger"
           [iconOnly]="true"
-          (click)="$event.stopPropagation(); deleteIncome(row)"
+          (click)="$event.stopPropagation(); requestDeleteIncome(row)"
           aria-label="Delete income"
           title="Delete income"
         >✕</pt-button>
@@ -157,7 +157,7 @@
     <pt-input label="Description (optional)" formControlName="description" placeholder="Add a note about this income" />
     <div class="form-actions">
       @if (editingIncome) {
-        <pt-button type="button" variant="danger" (click)="deleteIncome()">Delete</pt-button>
+        <pt-button type="button" variant="danger" (click)="requestDeleteIncome()">Delete</pt-button>
       }
       <pt-button type="button" variant="ghost" (click)="closeModal()">Cancel</pt-button>
       <pt-button
@@ -166,4 +166,25 @@
       >Save</pt-button>
     </div>
   </form>
+</pt-modal>
+
+<pt-modal
+  [open]="pendingDeleteIncome !== null"
+  title="Delete income?"
+  [backdropClosable]="false"
+  (close)="cancelDeleteIncome()"
+>
+  <div class="delete-confirmation">
+    <p>Are you sure you want to delete this income entry? This action cannot be undone.</p>
+    @if (pendingDeleteIncome; as income) {
+      <p class="delete-confirmation__details">
+        {{ income.source }} · {{ income.date }} ·
+        {{ income.currency }} {{ income.amount | number: '1.2-2' }}
+      </p>
+    }
+    <div class="delete-confirmation__actions">
+      <pt-button type="button" variant="ghost" (click)="cancelDeleteIncome()">Cancel</pt-button>
+      <pt-button type="button" variant="danger-filled" (click)="confirmDeleteIncome()">Delete</pt-button>
+    </div>
+  </div>
 </pt-modal>

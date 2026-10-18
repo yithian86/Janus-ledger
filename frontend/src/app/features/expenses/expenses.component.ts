@@ -51,6 +51,7 @@ export class ExpensesComponent implements OnInit {
   ledgerSortDirection: SortDirection = 'desc';
   modalOpen = false;
   editingExpense: Expense | null = null;
+  pendingDeleteExpense: Expense | null = null;
   entryMode: EntryMode = 'single';
   readonly subcategorySuggestions = ['Electricity', 'Gas', 'Water', 'Stamp Duty', 'Train', 'Mobile phone bill'];
   trendChart?: EChartsOption;
@@ -262,10 +263,21 @@ export class ExpensesComponent implements OnInit {
     request$.subscribe(() => this.closeModal());
   }
 
-  deleteExpense(expense?: Expense) {
+  requestDeleteExpense(expense?: Expense) {
     const target = expense ?? this.editingExpense;
     if (!target) return;
+    this.pendingDeleteExpense = target;
+  }
+
+  cancelDeleteExpense() {
+    this.pendingDeleteExpense = null;
+  }
+
+  confirmDeleteExpense() {
+    const target = this.pendingDeleteExpense;
+    if (!target) return;
     this.expenseService.delete(target.id).subscribe(() => {
+      this.pendingDeleteExpense = null;
       if (this.editingExpense?.id === target.id) this.closeModal();
     });
   }

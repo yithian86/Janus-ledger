@@ -46,6 +46,7 @@ export class IncomesComponent implements OnInit {
   viewMode: ChartViewMode = 'month';
   modalOpen = false;
   editingIncome: Income | null = null;
+  pendingDeleteIncome: Income | null = null;
   entryMode: EntryMode = 'single';
   incomeChart: EChartsOption = {};
 
@@ -299,10 +300,21 @@ export class IncomesComponent implements OnInit {
     request$.subscribe(() => this.closeModal());
   }
 
-  deleteIncome(income?: Income) {
+  requestDeleteIncome(income?: Income) {
     const target = income ?? this.editingIncome;
     if (!target) return;
+    this.pendingDeleteIncome = target;
+  }
+
+  cancelDeleteIncome() {
+    this.pendingDeleteIncome = null;
+  }
+
+  confirmDeleteIncome() {
+    const target = this.pendingDeleteIncome;
+    if (!target) return;
     this.incomeService.delete(target.id).subscribe(() => {
+      this.pendingDeleteIncome = null;
       if (this.editingIncome?.id === target.id) this.closeModal();
     });
   }

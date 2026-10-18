@@ -60,6 +60,17 @@
   }
 }
 
+.pt-button--danger-filled {
+  background: var(--color-loss);
+  color: #fff;
+  border-color: var(--color-loss);
+
+  &:hover:not(:disabled) {
+    background: #8F2F2F;
+    border-color: #8F2F2F;
+  }
+}
+
 .pt-button--icon-only {
   align-items: center;
   color: #fff;

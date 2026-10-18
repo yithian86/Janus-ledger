@@ -27,10 +27,12 @@ export const EXPENSE_CATEGORIES: ExpenseCategory[] = [
   { value: 'fees', label: 'Fees', group: 'Transport & services' },
   { value: 'services', label: 'Services', group: 'Transport & services' },
   { value: 'leisure', label: 'Leisure', group: 'Lifestyle' },
+  { value: 'education', label: 'Learning & formation', group: 'Personal development' },
   { value: 'gifts', label: 'Gifts', group: 'Lifestyle' },
   { value: 'holidays', label: 'Holidays', group: 'Lifestyle' },
   { value: 'clothing', label: 'Clothing', group: 'Lifestyle' },
   { value: 'out', label: 'Out & dining', group: 'Lifestyle' },
+  { value: 'donations', label: 'Donations', group: 'Giving' },
   { value: 'other', label: 'Other', group: 'Other' },
 ];
 

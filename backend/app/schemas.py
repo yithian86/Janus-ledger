@@ -2,6 +2,7 @@
 Pydantic schemas — API request/response shapes, decoupled from the ORM models.
 """
 from datetime import date as date_type
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
@@ -117,6 +118,25 @@ class TransactionOut(TransactionBase):
 
 # ---------- Expense ----------
 
+class ExpenseCategory(str, Enum):
+    HOUSE = "house"
+    CONDO = "condo"
+    GROCERIES = "groceries"
+    UTILITIES = "utilities"
+    HEALTH = "health"
+    TRANSPORTATION = "transportation"
+    FEES = "fees"
+    SERVICES = "services"
+    LEISURE = "leisure"
+    EDUCATION = "education"
+    GIFTS = "gifts"
+    HOLIDAYS = "holidays"
+    CLOTHING = "clothing"
+    OUT = "out"
+    DONATIONS = "donations"
+    OTHER = "other"
+
+
 class ExpenseBase(BaseModel):
     date: date_type
     amount: float
@@ -134,7 +154,7 @@ class ExpenseBase(BaseModel):
 
 
 class ExpenseCreate(ExpenseBase):
-    pass
+    category: ExpenseCategory
 
 
 class ExpenseBatchCreate(BaseModel):
@@ -142,7 +162,7 @@ class ExpenseBatchCreate(BaseModel):
     end_date: date_type
     amount: float
     currency: str = "EUR"
-    category: str
+    category: ExpenseCategory
     subcategory: Optional[str] = None
     description: Optional[str] = None
 
@@ -164,7 +184,7 @@ class ExpenseUpdate(BaseModel):
     date: Optional[date_type] = None
     amount: Optional[float] = None
     currency: Optional[str] = None
-    category: Optional[str] = None
+    category: Optional[ExpenseCategory] = None
     subcategory: Optional[str] = None
     description: Optional[str] = None
 

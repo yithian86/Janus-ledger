@@ -74,6 +74,7 @@ export class TransactionsComponent implements OnInit {
 
   modalOpen = false;
   editingTxn: Transaction | null = null;
+  pendingDeleteTransaction: TransactionRow | null = null;
 
   columns: TableColumn<TransactionRow>[] = [
     { key: 'date', header: 'Date', sortable: true },
@@ -321,9 +322,19 @@ export class TransactionsComponent implements OnInit {
     request$.subscribe(() => this.closeModal());
   }
 
-  deleteTransaction(id: number) {
-    if (confirm('Are you sure you want to delete this transaction?')) {
-      this.transactionService.delete(id).subscribe();
-    }
+  requestDeleteTransaction(transaction: TransactionRow) {
+    this.pendingDeleteTransaction = transaction;
+  }
+
+  cancelDeleteTransaction() {
+    this.pendingDeleteTransaction = null;
+  }
+
+  confirmDeleteTransaction() {
+    const transaction = this.pendingDeleteTransaction;
+    if (!transaction) return;
+    this.transactionService.delete(transaction.id).subscribe(() => {
+      this.pendingDeleteTransaction = null;
+    });
   }
 }

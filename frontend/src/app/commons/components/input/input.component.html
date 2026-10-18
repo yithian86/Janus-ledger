@@ -11,6 +11,7 @@
       class="pt-input"
       [class.pt-input--numeric]="numeric"
       [class.pt-input--has-prefix]="!!prefix"
+      [class.pt-input--clearable]="clearable"
       [type]="type"
       [step]="step"
       [placeholder]="placeholder"
@@ -20,6 +21,14 @@
       (input)="onInput($event)"
       (blur)="onTouched()"
     />
+    @if (clearable && value) {
+      <button
+        type="button"
+        class="pt-field__clear"
+        (click)="clear()"
+        [attr.aria-label]="'Clear ' + (label || 'input')"
+      >×</button>
+    }
     @if (suggestions.length) {
       <datalist [id]="suggestionsId">
         @for (suggestion of suggestions; track suggestion) {

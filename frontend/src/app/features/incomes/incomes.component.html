@@ -77,7 +77,7 @@
     <p class="text-muted table-caption">Select an entry to edit it. Currency totals stay separate.</p>
   </div>
   <div class="table-header__filters">
-    <pt-input label="Search" placeholder="Search income..." [(ngModel)]="ledgerSearch" />
+    <pt-input label="Search" placeholder="Search income..." [clearable]="true" [(ngModel)]="ledgerSearch" />
     <pt-select label="Source" [options]="incomeSources" [(ngModel)]="ledgerSource" />
   </div>
 </div>

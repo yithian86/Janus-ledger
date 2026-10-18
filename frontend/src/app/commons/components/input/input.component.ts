@@ -28,6 +28,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() numeric = false;
   @Input() step: string = 'any';
   @Input() suggestions: string[] = [];
+  @Input() clearable = false;
 
   value: string | number | null = null;
   disabled = false;
@@ -49,6 +50,12 @@ export class InputComponent implements ControlValueAccessor {
     const parsed = this.type === 'number' ? (raw === '' ? null : Number(raw)) : raw;
     this.value = parsed;
     this.onChange(parsed);
+  }
+
+  clear() {
+    this.value = '';
+    this.onChange('');
+    this.onTouched();
   }
 
   writeValue(value: string | number | null): void {

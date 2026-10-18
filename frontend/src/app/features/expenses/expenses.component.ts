@@ -174,6 +174,12 @@ export class ExpensesComponent implements OnInit {
     this.ledgerSearch = event.name;
   }
 
+  onCategoryChartClick(event: ECElementEvent) {
+    if (event.componentType !== 'series' || !event.name) return;
+    const category = EXPENSE_CATEGORIES.find(({ value }) => this.categoryLabel(value) === event.name);
+    if (category) this.ledgerCategory = category.value;
+  }
+
   private ledgerSortValue(expense: Expense, key: string): string | number | null {
     const value = expense[key as keyof Expense];
     if (value == null || value === '') return null;

@@ -62,7 +62,7 @@
       >⛶</button>
     </div>
     @if (categoryChart) {
-      <div echarts [options]="categoryChart" class="chart"></div>
+      <div echarts [options]="categoryChart" class="chart" (chartClick)="onCategoryChartClick($event)"></div>
     }
   </div>
 </div>
@@ -204,7 +204,7 @@
       @if (expandedChart === 'trend' && trendChart) {
         <div echarts [options]="trendChart" class="chart chart--fullscreen" (chartClick)="onTrendChartClick($event)"></div>
       }       @else if (expandedChart === 'category' && expandedCategoryChart) {
-        <div echarts [options]="expandedCategoryChart" class="chart chart--fullscreen"></div>
+        <div echarts [options]="expandedCategoryChart" class="chart chart--fullscreen" (chartClick)="onCategoryChartClick($event)"></div>
       }
     </div>
   </div>

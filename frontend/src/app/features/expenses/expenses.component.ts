@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxEchartsDirective } from 'ngx-echarts';
-import type { EChartsOption } from 'echarts';
+import type { EChartsOption, ECElementEvent } from 'echarts';
 
 import { ExpenseService } from '../../core/services/expense.service';
 import {
@@ -167,6 +167,11 @@ export class ExpensesComponent implements OnInit {
   onLedgerSortChange(event: { key: string; direction: SortDirection }) {
     this.ledgerSortKey = event.direction ? event.key : null;
     this.ledgerSortDirection = event.direction;
+  }
+
+  onTrendChartClick(event: ECElementEvent) {
+    if (event.componentType !== 'series' || !event.name) return;
+    this.ledgerSearch = event.name;
   }
 
   private ledgerSortValue(expense: Expense, key: string): string | number | null {

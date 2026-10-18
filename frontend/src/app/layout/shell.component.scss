@@ -22,7 +22,7 @@
 .pt-sidebar__brand {
   display: flex;
   flex-direction: column;
-  padding: 0 0 var(--space-xl);
+  padding: 0 var(--space-xl);
 }
 
 .pt-sidebar__brand-logo {
@@ -65,6 +65,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: var(--space-lg) 0;
 }
 
 .pt-sidebar__separator {
@@ -76,7 +77,7 @@
 .pt-sidebar__link {
   color: var(--color-sidebar-ink-muted);
   text-decoration: none;
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-2xs) var(--space-sm);
   border-radius: var(--radius-sm);
   font-size: var(--text-sm);
   font-weight: 500;

@@ -3,7 +3,6 @@
     <h1>Expenses</h1>
     <p class="text-muted">Track household spending by category and see where your money goes.</p>
   </div>
-  <pt-button (click)="openCreate()">+ Add expense</pt-button>
 </div>
 
 <div class="controls">
@@ -68,7 +67,7 @@
 </div>
 
 <div class="table-header">
-  <h3>Expense ledger</h3>
+  <pt-button (click)="openCreate()">+ Add expense</pt-button>
   <div class="table-header__filters">
     <pt-input
       label="Search"

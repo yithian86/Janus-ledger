@@ -3,7 +3,6 @@
     <h1>Income</h1>
     <p class="text-muted">Keep track of every paycheck, side project, and other source of income.</p>
   </div>
-  <pt-button (click)="openCreate()">+ Add income</pt-button>
 </div>
 
 <div class="controls">
@@ -72,10 +71,7 @@
 </section>
 
 <div class="table-header">
-  <div>
-    <h3>Income ledger</h3>
-    <p class="text-muted table-caption">Select an entry to edit it. Currency totals stay separate.</p>
-  </div>
+  <pt-button (click)="openCreate()">+ Add income</pt-button>
   <div class="table-header__filters">
     <pt-input label="Search" placeholder="Search income..." [clearable]="true" [(ngModel)]="ledgerSearch" />
     <pt-select label="Source" [options]="incomeSources" [(ngModel)]="ledgerSource" />

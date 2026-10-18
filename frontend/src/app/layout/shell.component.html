@@ -1,14 +1,10 @@
 <div class="pt-shell">
   <aside class="pt-sidebar" [class.pt-sidebar--collapsed]="isCollapsed">
+    <button type="button" class="pt-sidebar__toggle" (click)="toggleSidebar()" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle sidebar">
+      <span class="pt-sidebar__toggle-icon">{{ isCollapsed ? '›' : '‹' }}</span>
+    </button>
     <div class="pt-sidebar__brand">
-      <span class="pt-sidebar__brand-mark">◆</span>
-      <div class="pt-sidebar__brand-copy">
-        <span class="pt-sidebar__brand-name">JanusLedger</span>
-        <span class="pt-sidebar__brand-meta">v0.1.0</span>
-      </div>
-      <button type="button" class="pt-sidebar__toggle" (click)="toggleSidebar()" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle sidebar">
-        <span class="pt-sidebar__toggle-icon">{{ isCollapsed ? '›' : '‹' }}</span>
-      </button>
+      <img class="pt-sidebar__brand-logo" src="assets/logo.png" alt="JanusLedger logo" />
     </div>
     <nav class="pt-sidebar__nav">
       <a routerLink="/dashboard" routerLinkActive="pt-sidebar__link--active" class="pt-sidebar__link" title="Dashboard">
@@ -39,6 +35,7 @@
         <span class="pt-sidebar__link-label">Reports</span>
       </a>
     </nav>
+    <div class="pt-sidebar__version">v0.1.0</div>
   </aside>
   <main class="pt-content">
     <router-outlet />

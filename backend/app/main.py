@@ -9,7 +9,7 @@ from app.routers import assets, transactions, prices, reports, expenses, incomes
 # relying on this (it won't alter existing tables).
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Portfolio Tracker API", version="1.0.1")
+app = FastAPI(title="Portfolio Tracker API", version="1.0.2")
 
 # Local Angular dev server origins
 app.add_middleware(

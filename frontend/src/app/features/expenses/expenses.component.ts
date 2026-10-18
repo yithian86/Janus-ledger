@@ -116,6 +116,24 @@ export class ExpensesComponent implements OnInit {
     return top ? EXPENSE_CATEGORY_LABELS[top[0]] : '—';
   }
 
+  get ledgerCurrencyTotals(): { currency: string; amount: number }[] {
+    const totals = this.ledgerExpenses.reduce<Record<string, number>>((result, expense) => {
+      result[expense.currency] = (result[expense.currency] ?? 0) + expense.amount;
+      return result;
+    }, {});
+    return Object.entries(totals)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([currency, amount]) => ({ currency, amount }));
+  }
+
+  get ledgerFooterRows(): Partial<Record<string, string | number>>[] {
+    return this.ledgerCurrencyTotals.map((total, index) => ({
+      category: index === 0 ? 'Displayed total' : '',
+      amount: total.amount,
+      currency: total.currency,
+    }));
+  }
+
   get ledgerExpenses(): Expense[] {
     const search = this.ledgerSearch.trim().toLocaleLowerCase();
     const expenses = this.filteredExpenses.filter((expense) => {
